@@ -3,12 +3,14 @@
 namespace app\controllers;
 
 use Yii;
+use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\Response;
 use yii\web\ForbiddenHttpException;
 use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
 use app\models\Homework;
+use app\models\Subjects;
 use app\models\Teachers;
 
 class HomeworkController extends Controller
