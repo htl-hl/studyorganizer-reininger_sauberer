@@ -9321,6 +9321,7 @@ $_SERVER = [
     'REQUEST_TIME_FLOAT' => 1772113337.5317
     'REQUEST_TIME' => 1772113337
 ]
+<<<<<<< HEAD
 2026-02-26 14:57:41 [172.18.0.5][-][-][warning][yii\debug\Module::checkAccess] Access to debugger is denied due to IP address restriction. The requesting IP address is 172.18.0.5
     in /var/www/html/views/layouts/login.php:86
     in /var/www/html/controllers/SiteController.php:85
@@ -9783,3 +9784,5 @@ $_SERVER = [
     'REQUEST_TIME_FLOAT' => 1772114270.5604
     'REQUEST_TIME' => 1772114270
 ]
+=======
+>>>>>>> main

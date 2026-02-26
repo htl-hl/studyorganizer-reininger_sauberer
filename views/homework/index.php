@@ -1,73 +1,84 @@
 <?php
 use yii\helpers\Html;
-use app\models\Homework;
+use yii\helpers\Url;
 
 /** @var yii\web\View $this */
-/** @var yii\data\ActiveDataProvider $dataProvider */
+/** @var app\models\Homework[] $homeworks */
 
-$this->title = 'Homeworks';
+$this->title = 'Hausaufgaben Übersicht';
 $this->params['breadcrumbs'][] = $this->title;
 
-$homeworks = Homework::find()->orderBy(['due_date'=>SORT_ASC])->all();
+$today = new DateTime('today');
+$weekStart = clone $today;
+$weekStart->modify('monday this week');
 
-$days = ['Montag','Dienstag','Mittwoch','Donnerstag','Freitag'];
-
-$weeks = [
+$sections = [
         'Aktuelle Woche' => [],
         'Nächste Woche' => [],
-        'Übernächste Woche' => [],
+        'Später' => [],
 ];
 
-$today = strtotime('today');
-$weekStart = strtotime('monday this week', $today);
-
 foreach ($homeworks as $hw) {
-    $due = strtotime($hw->due_date);
-    $diffWeeks = floor(($due - $weekStart)/(7*24*60*60));
-    if ($diffWeeks == 0) $weeks['Aktuelle Woche'][] = $hw;
-    elseif ($diffWeeks == 1) $weeks['Nächste Woche'][] = $hw;
-    elseif ($diffWeeks == 2) $weeks['Übernächste Woche'][] = $hw;
+    $dueDate = new DateTime($hw->due_date);
+    $interval = $weekStart->diff($dueDate);
+    $weeksDiff = (int)floor($interval->format('%r%a') / 7);
+
+    if ($weeksDiff == 0) $sections['Aktuelle Woche'][] = $hw;
+    elseif ($weeksDiff == 1) $sections['Nächste Woche'][] = $hw;
+    else $sections['Später'][] = $hw;
 }
 ?>
 
-<div class="container mt-4">
+<div class="homework-index container py-4">
 
-    <div class="d-flex justify-content-between mb-3">
-        <div>
-            <?= Html::a('Add', ['create'], ['class'=>'btn btn-primary']) ?>
-        </div>
-        <div>
-            <?= Html::a('Logout', ['/site/logout'], ['class'=>'btn btn-danger', 'data-method'=>'post']) ?>
-        </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><?= Html::encode($this->title) ?></h1>
+        <?= Html::a('<i class="fas fa-plus"></i> Neue Aufgabe', ['create'], ['class' => 'btn btn-success shadow-sm']) ?>
     </div>
 
-    <table class="table table-bordered text-center">
-        <thead>
-        <tr>
-            <th>Woche</th>
-            <?php foreach ($days as $day): ?>
-                <th><?= $day ?></th>
-            <?php endforeach; ?>
-        </tr>
-        </thead>
-        <tbody>
-        <?php foreach ($weeks as $weekName => $weekTasks): ?>
-            <tr>
-                <td class="fw-bold align-middle"><?= $weekName ?></td>
-                <?php foreach ($days as $day): ?>
-                    <td style="min-width:120px; vertical-align:top;">
-                        <?php
-                        foreach ($weekTasks as $task) {
-                            if (strtolower(date('l', strtotime($task->due_date))) === strtolower($day)) {
-                                echo Html::a(Html::encode($task->title), ['view', 'id'=>$task->id], ['class'=>'btn btn-outline-primary btn-sm mb-1 d-block']);
-                            }
-                        }
-                        ?>
-                    </td>
+    <?php foreach ($sections as $title => $tasks): ?>
+        <?php if (!empty($tasks)): ?>
+            <h3 class="border-bottom pb-2 mb-3 mt-4 text-secondary"><?= $title ?></h3>
+
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+                <?php foreach ($tasks as $task): ?>
+                    <div class="col">
+                        <div class="card h-100 shadow-sm hover-shadow" style="cursor: pointer;"
+                             onclick="window.location='<?= Url::to(['view', 'id' => $task->id]) ?>'">
+
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="card-title text-primary mb-0">
+                                        <?= Html::encode($task->title) ?>
+                                    </h5>
+                                    <span class="badge bg-light text-dark border">
+                                        <?= Yii::$app->formatter->asDate($task->due_date, 'php:d.m.') ?>
+                                    </span>
+                                </div>
+
+                                <p class="card-text text-muted small">
+                                    <i class="bi bi-calendar-event"></i>
+                                    <?= Yii::$app->formatter->asDate($task->due_date, 'php:l') ?>
+                                </p>
+                            </div>
+
+                            <div class="card-footer bg-transparent border-top-0 text-end">
+                                <?= Html::a('Details →', ['view', 'id' => $task->id], ['class' => 'btn btn-sm btn-outline-primary']) ?>
+                            </div>
+                        </div>
+                    </div>
                 <?php endforeach; ?>
-            </tr>
-        <?php endforeach; ?>
-        </tbody>
-    </table>
+            </div>
+        <?php endif; ?>
+    <?php endforeach; ?>
 
 </div>
+
+<style>
+    .hover-shadow:hover {
+        transform: translateY(-3px);
+        transition: all 0.2s ease-in-out;
+        box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15)!important;
+    }
+    .card { transition: all 0.2s; }
+</style>

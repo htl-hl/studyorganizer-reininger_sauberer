@@ -37,7 +37,7 @@ tests/_support/_generated
 .ddev
 /tests
 /vendor
-/runtime
+/runtime/*
 /web/assets
 .bowerrc
 
