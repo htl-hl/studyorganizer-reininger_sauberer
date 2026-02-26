@@ -34,3 +34,16 @@ tests/_support/_generated
 
 #vagrant folder
 /.vagrant
+.ddev
+/tests
+/vendor
+/runtime
+/web/assets
+.bowerrc
+
+assets/*
+!assets/.gitignore
+protected/runtime/*
+!protected/runtime/.gitignore
+protected/data/*.db
+themes/classic/views/
