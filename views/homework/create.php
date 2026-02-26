@@ -5,7 +5,7 @@ use yii\helpers\Html;
 /** @var yii\web\View $this */
 /** @var app\models\Homework $model */
 
-$this->title = 'Create Homework';
+$this->title = 'Aufgabe hinzufügen';
 $this->params['breadcrumbs'][] = ['label' => 'Homeworks', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>

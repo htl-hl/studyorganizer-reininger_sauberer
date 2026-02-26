@@ -29,13 +29,20 @@ foreach ($homeworks as $hw) {
 }
 ?>
 
-<div class="homework-index container py-4">
+<div class="homework-index container">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1><?= Html::encode($this->title) ?></h1>
-        <?= Html::a('<i class="fas fa-plus"></i> Neue Aufgabe', ['create'], ['class' => 'btn btn-success shadow-sm']) ?>
+    <div class="d-flex justify-content-between align-items-end border-bottom pb-3 mb-4">
+        <div>
+            <h1 class="display-5 fw-bold text-dark mb-0"><?= Html::encode($this->title) ?></h1>
+        </div>
+        <div>
+            <?= Html::a(
+                    '<i class="bi bi-plus-lg me-2"></i> Aufgabe hinzufügen',
+                    ['create'],
+                    ['class' => 'btn btn-success btn-lg rounded-3 shadow px-4']
+            ) ?>
+        </div>
     </div>
-
     <?php foreach ($sections as $title => $tasks): ?>
         <?php if (!empty($tasks)): ?>
             <h3 class="border-bottom pb-2 mb-3 mt-4 text-secondary"><?= $title ?></h3>
