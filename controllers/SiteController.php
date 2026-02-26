@@ -3,12 +3,14 @@
 namespace app\controllers;
 
 use Yii;
-use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
+use app\models\User;
 use app\models\ContactForm;
+use yii\base\DynamicModel;
 
 class SiteController extends Controller
 {
@@ -19,18 +21,20 @@ class SiteController extends Controller
     {
         return [
             'access' => [
-                'class' => AccessControl::class,
-                'only' => ['logout'],
+                'class' => \yii\filters\AccessControl::class,
+                'only' => ['index', 'about', 'contact'],
                 'rules' => [
                     [
-                        'actions' => ['logout'],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['?', '@'], // nur angemeldete Nutzer
                     ],
                 ],
+                'denyCallback' => function ($rule, $action) {
+                    return $this->redirect(['site/login']);
+                },
             ],
             'verbs' => [
-                'class' => VerbFilter::class,
+                'class' => \yii\filters\VerbFilter::class,
                 'actions' => [
                     'logout' => ['post'],
                 ],
@@ -64,38 +68,54 @@ class SiteController extends Controller
         return $this->render('index');
     }
 
-    /**
-     * Login action.
-     *
-     * @return Response|string
-     */
     public function actionLogin()
     {
         if (!Yii::$app->user->isGuest) {
-            return $this->goHome();
+            return $this->redirect(['homework/index']);
         }
 
+        $this->layout = 'login';
         $model = new LoginForm();
+
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
+            return $this->redirect(['homework/index']);
         }
 
         $model->password = '';
-        return $this->render('login', [
-            'model' => $model,
-        ]);
+        return $this->render('login', ['model' => $model]);
     }
 
-    /**
-     * Logout action.
-     *
-     * @return Response
-     */
+    public function actionRegister()
+    {
+        $model = new User();
+        $model->scenario = 'register';
+        $this->layout = 'register';
+
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+
+            $model->password = Yii::$app->security->generatePasswordHash($model->password);
+            $model->authKey = Yii::$app->security->generateRandomString();
+            $model->role = 'user';
+
+            if ($model->save()) {
+                Yii::$app->user->login(
+                    $model,
+                    $model->rememberMe ? 3600 * 24 * 30 : 0
+                );
+
+                Yii::$app->session->setFlash('success', 'Registrierung erfolgreich.');
+
+                return $this->redirect(['homework/index']);
+            }
+        }
+
+        return $this->render('register', ['model' => $model]);
+    }
+
     public function actionLogout()
     {
         Yii::$app->user->logout();
-
-        return $this->goHome();
+        return $this->redirect(['site/index']);
     }
 
     /**
