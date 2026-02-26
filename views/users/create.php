@@ -1,20 +1,17 @@
 <?php
-
 use yii\helpers\Html;
-
-/** @var yii\web\View $this */
-/** @var app\models\Users $model */
-
-$this->title = 'Create Users';
-$this->params['breadcrumbs'][] = ['label' => 'Users', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+use yii\widgets\ActiveForm;
 ?>
-<div class="users-create">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+<h1>Registrierung</h1>
 
-    <?= $this->render('_form', [
-        'model' => $model,
-    ]) ?>
+<?php $form = ActiveForm::begin(); ?>
 
+<?= $form->field($model, 'username')->textInput() ?>
+<?= $form->field($model, 'password')->passwordInput() ?>
+
+<div class="form-group">
+    <?= Html::submitButton('Registrieren', ['class' => 'btn btn-primary']) ?>
 </div>
+
+<?php ActiveForm::end(); ?>

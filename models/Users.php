@@ -12,14 +12,10 @@ use Yii;
  * @property string $password
  * @property string $firstname
  * @property string $lastname
- * @property string $role
  *
- * @property Homework[] $homeworks
  */
 class Users extends \yii\db\ActiveRecord
 {
-
-
     /**
      * {@inheritdoc}
      */
@@ -34,10 +30,8 @@ class Users extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['username', 'password', 'firstname', 'lastname', 'role'], 'required'],
-            [['username', 'firstname', 'lastname'], 'string', 'max' => 50],
-            [['password'], 'string', 'max' => 255],
-            [['role'], 'string', 'max' => 20],
+            [['username', 'password', 'firstname', 'lastname'], 'required'],
+            [['username', 'password', 'firstname', 'lastname'], 'string', 'max' => 255],
             [['username'], 'unique'],
         ];
     }
@@ -48,23 +42,17 @@ class Users extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
-            'username' => 'Username',
-            'password' => 'Password',
-            'firstname' => 'Firstname',
-            'lastname' => 'Lastname',
-            'role' => 'Role',
+            'id' => Yii::t('app', 'ID'),
+            'username' => Yii::t('app', 'Username'),
+            'password' => Yii::t('app', 'Password'),
+            'firstname' => Yii::t('app', 'Firstname'),
+            'lastname' => Yii::t('app', 'Lastname'),
         ];
     }
 
-    /**
-     * Gets query for [[Homeworks]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getHomeworks()
+    public static function find()
     {
-        return $this->hasMany(Homework::class, ['user_id' => 'id']);
+        return new UsersQuery(get_called_class());
     }
 
 }

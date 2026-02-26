@@ -9,7 +9,8 @@ CREATE TABLE Users (
     password VARCHAR(255) NOT NULL,
     firstname VARCHAR(50) NOT NULL,
     lastname VARCHAR(50) NOT NULL,
-    role VARCHAR(20) NOT NULL
+    role VARCHAR(20) NOT NULL,
+    authKey VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE Subjects (
@@ -41,6 +42,8 @@ CREATE TABLE Homework (
     status VARCHAR(20),
     user_id INT NOT NULL,
     subject_id INT NOT NULL,
+    teacher_id INT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES Users(id),
-    FOREIGN KEY (subject_id) REFERENCES Subjects(id)
+    FOREIGN KEY (subject_id) REFERENCES Subjects(id),
+    FOREIGN KEY (teacher_id) REFERENCES Teachers(id)
 );
