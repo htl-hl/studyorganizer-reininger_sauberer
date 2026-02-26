@@ -41,7 +41,23 @@ foreach ($homeworks as $hw) {
             <h3 class="border-bottom pb-2 mb-3 mt-4 text-secondary"><?= $title ?></h3>
 
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
-                <?php foreach ($tasks as $task): ?>
+                <?php foreach ($tasks as $task):
+                    // Logic for color coding
+                    $dueDateTime = new DateTime($task->due_date);
+                    $now = new DateTime('today');
+                    $diff = $now->diff($dueDateTime);
+                    $daysRemaining = (int)$diff->format("%r%a"); // %r gives - for past dates
+
+                    $badgeClass = 'bg-light text-dark border'; // Default: >= 2 weeks
+
+                    if ($daysRemaining < 1) {
+                        $badgeClass = 'bg-danger text-white'; // Less than 1 day
+                    } elseif ($daysRemaining < 7) {
+                        $badgeClass = 'bg-warning text-dark'; // Less than 1 week
+                    } elseif ($daysRemaining < 14) {
+                        $badgeClass = 'bg-primary text-white'; // Less than 2 weeks
+                    }
+                    ?>
                     <div class="col">
                         <div class="card h-100 shadow-sm hover-shadow" style="cursor: pointer;"
                              onclick="window.location='<?= Url::to(['view', 'id' => $task->id]) ?>'">
@@ -51,14 +67,19 @@ foreach ($homeworks as $hw) {
                                     <h5 class="card-title text-primary mb-0">
                                         <?= Html::encode($task->title) ?>
                                     </h5>
-                                    <span class="badge bg-light text-dark border">
-                                        <?= Yii::$app->formatter->asDate($task->due_date, 'php:d.m.') ?>
-                                    </span>
+                                    <span class="badge <?= $badgeClass ?>">
+                        <?= Yii::$app->formatter->asDate($task->due_date, 'php:d.m.') ?>
+                    </span>
                                 </div>
 
                                 <p class="card-text text-muted small">
                                     <i class="bi bi-calendar-event"></i>
                                     <?= Yii::$app->formatter->asDate($task->due_date, 'php:l') ?>
+                                    <?php if ($daysRemaining == 0): ?>
+                                        <span class="text-danger fw-bold">(Heute fällig!)</span>
+                                    <?php elseif ($daysRemaining < 0): ?>
+                                        <span class="text-secondary fw-bold">(Überfällig!)</span>
+                                    <?php endif; ?>
                                 </p>
                             </div>
 

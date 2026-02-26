@@ -6,6 +6,7 @@ use Yii;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\Response;
+use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use app\models\Homework;
 use app\models\Subjects;
@@ -13,6 +14,19 @@ use app\models\Teachers;
 
 class HomeworkController extends Controller
 {
+
+    public function behaviors()
+    {
+        return [
+            'verbs' => [
+                'class' => VerbFilter::class,
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
+            ],
+        ];
+    }
+
     public function actionIndex()
     {
         $homeworks = Homework::find()
@@ -38,7 +52,6 @@ class HomeworkController extends Controller
         });
     }
 
-    // Create Action
     public function actionCreate()
     {
         $model = new Homework();
@@ -55,5 +68,29 @@ class HomeworkController extends Controller
     public function actionView($id)
     {
         return $this->render('view', ['model' => Homework::findOne($id)]);
+    }
+
+    public function actionUpdate($id)
+    {
+        $model = Homework::findOne($id);
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['view', 'id' => $model->id]);
+        }
+
+        return $this->render('update', [
+            'model' => $model,
+        ]);
+    }
+
+    public function actionDelete($id)
+    {
+        $model = Homework::findOne($id);
+
+        if ($model) {
+            $model->delete();
+        }
+
+        return $this->redirect(['index']);
     }
 }
