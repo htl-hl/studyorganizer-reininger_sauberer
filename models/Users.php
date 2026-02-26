@@ -49,10 +49,4 @@ class Users extends \yii\db\ActiveRecord
             'lastname' => Yii::t('app', 'Lastname'),
         ];
     }
-
-    public static function find()
-    {
-        return new UsersQuery(get_called_class());
-    }
-
 }
