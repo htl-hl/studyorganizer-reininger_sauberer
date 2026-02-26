@@ -1,50 +1,23 @@
 <?php
-
-use app\models\Users;
 use yii\helpers\Html;
-use yii\helpers\Url;
-use yii\grid\ActionColumn;
-use yii\grid\GridView;
-use yii\widgets\Pjax;
-/** @var yii\web\View $this */
-/** @var app\models\UsersSearch $searchModel */
-/** @var yii\data\ActiveDataProvider $dataProvider */
-
-$this->title = 'Users';
-$this->params['breadcrumbs'][] = $this->title;
+use yii\widgets\ActiveForm;
 ?>
-<div class="users-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+<h1>Login</h1>
 
-    <p>
-        <?= Html::a('Create Users', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
+<?php $form = ActiveForm::begin(); ?>
 
-    <?php Pjax::begin(); ?>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+<?= $form->field($model, 'username')->textInput() ?>
+<?= $form->field($model, 'password')->passwordInput() ?>
 
-    <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
-            'id',
-            'username',
-            'password',
-            'firstname',
-            'lastname',
-            //'role',
-            [
-                'class' => ActionColumn::className(),
-                'urlCreator' => function ($action, Users $model, $key, $index, $column) {
-                    return Url::toRoute([$action, 'id' => $model->id]);
-                 }
-            ],
-        ],
-    ]); ?>
-
-    <?php Pjax::end(); ?>
-
+<div class="form-group">
+    <?= Html::submitButton('Login', ['class' => 'btn btn-success']) ?>
 </div>
+
+<?php ActiveForm::end(); ?>
+
+<hr>
+
+<p>Noch keinen Account?</p>
+
+<?= Html::a('Jetzt registrieren', ['site/register'], ['class' => 'btn btn-primary']) ?>
