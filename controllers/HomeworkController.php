@@ -15,18 +15,12 @@ class HomeworkController extends Controller
 {
     public function actionIndex()
     {
-        $dataProvider = new ActiveDataProvider([
-            'query' => Homework::find(),
-            'pagination' => [
-                'pageSize' => 10,
-            ],
-            'sort' => [
-                'defaultOrder' => ['due_date' => SORT_ASC],
-            ],
-        ]);
+        $homeworks = Homework::find()
+            ->orderBy(['due_date' => SORT_ASC])
+            ->all();
 
         return $this->render('index', [
-            'dataProvider' => $dataProvider,
+            'homeworks' => $homeworks,
         ]);
     }
 

@@ -23,7 +23,7 @@ $this->title = 'Registrieren';
         <?= $form->field($model, 'rememberMe')->checkbox(['label' => 'Angemeldet bleiben'])->label(false) ?>
     </div>
 
-<?= Html::submitButton('Registrieren', ['class'=>'btn-register', 'name'=>'register-button']) ?>
+<?= Html::submitButton('Registrieren', ['class'=>'btn btn-success w-100', 'name'=>'register-button']) ?>
 
     <a href="<?= \yii\helpers\Url::to(['site/login']) ?>">Schon ein Konto? Login</a>
 
