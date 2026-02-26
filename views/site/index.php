@@ -11,16 +11,16 @@ $this->title = 'My Yii Application';
     </div>
 
     <div class="body-content">
-
         <div class="row">
-            <div class="col-lg-4 mb-3">
-            </div>
-            <div class="col-lg-4 mb-3">
-                <p>The Perfect Tool to organize your Homework, Exams and School projects</p>
-            </div>
-            <div class="col-lg-4">
+            <div class="col-lg-12 text-center">
+                <p class="lead mb-4">The Perfect Tool to organize your Homework, Exams and School projects</p>
+
+                <?php if (Yii::$app->user->isGuest): ?>
+                    <a class="btn btn-primary btn-lg px-5" href="<?= \yii\helpers\Url::to(['/site/login']) ?>">Login</a>
+                <?php else: ?>
+                    <a class="btn btn-success btn-lg px-5" href="<?= \yii\helpers\Url::to(['/homework/index']) ?>">Homework</a>
+                <?php endif; ?>
             </div>
         </div>
-
     </div>
 </div>
