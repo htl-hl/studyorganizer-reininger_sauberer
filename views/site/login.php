@@ -18,7 +18,7 @@ $this->title = 'Login';
 
     <?= $form->field($model, 'username')->textInput(['placeholder'=>'Username', 'autofocus'=>true])->label(false) ?>
     <?= $form->field($model, 'password')->passwordInput(['placeholder'=>'Password'])->label(false) ?>
-    <?= Html::submitButton('Login', ['class'=>'btn-login', 'name'=>'login-button']) ?>
+    <?= Html::submitButton('Login', ['class'=>'btn btn-primary w-100', 'name'=>'login-button']) ?>
 
     <a href="<?= \yii\helpers\Url::to(['site/register']) ?>">Noch kein Konto? Registrieren</a>
 

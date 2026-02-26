@@ -74,7 +74,6 @@ class SiteController extends Controller
             return $this->redirect(['homework/index']);
         }
 
-        $this->layout = 'login';
         $model = new LoginForm();
 
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
@@ -89,7 +88,6 @@ class SiteController extends Controller
     {
         $model = new User();
         $model->scenario = 'register';
-        $this->layout = 'register';
 
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
 
