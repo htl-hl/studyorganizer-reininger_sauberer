@@ -87,32 +87,43 @@ foreach ($activeHomeworks as $hw) {
 <?php
 $toggleUrl = Url::to(['homework/toggle-status']);
 $js = <<<JS
+// --- MODAL LOGIC ---
+$(document).on('click', '#modalButton', function(e){
+    e.preventDefault();
+    var url = $(this).attr('value');
+    console.log("Opening Modal with URL: " + url);
+    
+    $('#modal').modal('show')
+        .find('#modalContent')
+        .load(url);
+});
+
+// --- CHECKBOX LOGIC ---
 $(document).on('change', '.finish-checkbox', function() {
     let checkbox = $(this);
     let id = checkbox.data('id');
+    let csrfToken = yii.getCsrfToken();
 
-    // Manually construct the URL with the ID to avoid routing issues
-    let targetUrl = '{$toggleUrl}' + ( '{$toggleUrl}'.includes('?') ? '&' : '?') + 'id=' + id;
+    console.log("Toggling Status for ID: " + id);
 
     $.ajax({
-        url: targetUrl,
+        url: '{$toggleUrl}',
         type: 'POST',
-        // This line sends the security token Yii requires for POST requests
         data: {
-            _csrf: yii.getCsrfToken() 
+            id: id,
+            _csrf: csrfToken
         },
         success: function(data) {
             if (data.success) {
                 location.reload(); 
             } else {
-                alert('Server error: ' + (data.error || 'Unknown error'));
+                alert('Fehler: ' + (data.error || 'Unbekannter Fehler'));
                 checkbox.prop('checked', !checkbox.prop('checked'));
             }
         },
         error: function(xhr) {
-            console.error("Status: " + xhr.status);
-            console.error("Response: " + xhr.responseText);
-            alert('Critical Error: Could not reach the server. (Status: ' + xhr.status + ')');
+            console.error(xhr.responseText);
+            alert('Konnte den Server nicht erreichen. Status: ' + xhr.status);
         }
     });
 });
