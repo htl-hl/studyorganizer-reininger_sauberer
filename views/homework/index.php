@@ -49,20 +49,19 @@ foreach ($homeworks as $hw) {
 
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
                 <?php foreach ($tasks as $task):
-                    // Logic for color coding
                     $dueDateTime = new DateTime($task->due_date);
                     $now = new DateTime('today');
                     $diff = $now->diff($dueDateTime);
-                    $daysRemaining = (int)$diff->format("%r%a"); // %r gives - for past dates
+                    $daysRemaining = (int)$diff->format("%r%a");
 
-                    $badgeClass = 'bg-light text-dark border'; // Default: >= 2 weeks
+                    $badgeClass = 'bg-light text-dark border';
 
                     if ($daysRemaining < 1) {
-                        $badgeClass = 'bg-danger text-white'; // Less than 1 day
+                        $badgeClass = 'bg-danger text-white';
                     } elseif ($daysRemaining < 7) {
-                        $badgeClass = 'bg-warning text-dark'; // Less than 1 week
+                        $badgeClass = 'bg-warning text-dark';
                     } elseif ($daysRemaining < 14) {
-                        $badgeClass = 'bg-primary text-white'; // Less than 2 weeks
+                        $badgeClass = 'bg-primary text-white';
                     }
                     ?>
                     <div class="col">

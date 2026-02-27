@@ -73,9 +73,10 @@ class HomeworkController extends Controller
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
 
+        // Wir suchen direkt in der Teachers-Tabelle nach der subject_id
         $teachers = Teachers::find()
-            ->innerJoin('Subject_Has_Teacher sht', 'sht.teacher_id = Teachers.id')
-            ->where(['sht.subject_id' => $id])
+            ->where(['subject_id' => $id])
+            ->andWhere(['status' => 1]) // Optional: nur aktive Lehrer anzeigen
             ->all();
 
         return ArrayHelper::map($teachers, 'id', function($t){

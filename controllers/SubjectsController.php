@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use Yii;
 use app\models\Subjects;
 use app\models\SubjectsSearch;
 use yii\web\Controller;
@@ -13,6 +14,13 @@ use yii\filters\VerbFilter;
  */
 class SubjectsController extends Controller
 {
+    public function beforeAction($action)
+    {
+        if (Yii::$app->request->isAjax) {
+            $this->layout = false;
+        }
+        return parent::beforeAction($action);
+    }
     /**
      * @inheritDoc
      */
@@ -69,15 +77,11 @@ class SubjectsController extends Controller
     {
         $model = new Subjects();
 
-        if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
-            }
-        } else {
-            $model->loadDefaultValues();
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['index']);
         }
 
-        return $this->render('create', [
+        return $this->renderAjax('create', [
             'model' => $model,
         ]);
     }
@@ -93,11 +97,11 @@ class SubjectsController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['index']);
         }
 
-        return $this->render('update', [
+        return $this->renderAjax('update', [
             'model' => $model,
         ]);
     }
@@ -125,10 +129,10 @@ class SubjectsController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = Subjects::findOne(['id' => $id])) !== null) {
+        if (($model = \app\models\Subjects::findOne(['id' => $id])) !== null) {
             return $model;
         }
 
-        throw new NotFoundHttpException('The requested page does not exist.');
+        throw new \yii\web\NotFoundHttpException('Das gesuchte Fach wurde nicht gefunden.');
     }
 }
