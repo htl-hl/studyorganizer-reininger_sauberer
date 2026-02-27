@@ -10,11 +10,11 @@ $this->params['breadcrumbs'][] = ['label' => 'Homeworks', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="homework-create">
-
-    <h1><?= Html::encode($this->title) ?></h1>
+    <?php if (!Yii::$app->request->isAjax): ?>
+        <h1><?= Html::encode($this->title) ?></h1>
+    <?php endif; ?>
 
     <?= $this->render('_form', [
-        'model' => $model,
+            'model' => $model,
     ]) ?>
-
 </div>

@@ -1,16 +1,16 @@
 <?php
 use yii\helpers\Html;
 use yii\helpers\Url;
+use yii\bootstrap5\Modal;
 
 /** @var yii\web\View $this */
-/** @var app\models\Homework[] $homeworks */
+/** @var app\models\Homework[] $activeHomeworks */
+/** @var app\models\Homework[] $finishedHomeworks */
 
 $this->title = 'Hausaufgaben Übersicht';
-$this->params['breadcrumbs'][] = $this->title;
 
 $today = new DateTime('today');
-$weekStart = clone $today;
-$weekStart->modify('monday this week');
+$weekStart = (clone $today)->modify('monday this week');
 
 $sections = [
         'Aktuelle Woche' => [],
@@ -18,10 +18,10 @@ $sections = [
         'Später' => [],
 ];
 
-foreach ($homeworks as $hw) {
+// Group ONLY Active tasks into weekly sections
+foreach ($activeHomeworks as $hw) {
     $dueDate = new DateTime($hw->due_date);
-    $interval = $weekStart->diff($dueDate);
-    $weeksDiff = (int)floor($interval->format('%r%a') / 7);
+    $weeksDiff = (int)floor($weekStart->diff($dueDate)->format('%r%a') / 7);
 
     if ($weeksDiff == 0) $sections['Aktuelle Woche'][] = $hw;
     elseif ($weeksDiff == 1) $sections['Nächste Woche'][] = $hw;
@@ -29,83 +29,93 @@ foreach ($homeworks as $hw) {
 }
 ?>
 
-<div class="homework-index container">
+    <div class="homework-index container mt-1">
 
-    <div class="d-flex justify-content-between align-items-end border-bottom pb-3 mb-4">
-        <div>
+        <div class="d-flex justify-content-between align-items-end border-bottom pb-3 mb-3">
             <h1 class="display-5 fw-bold text-dark mb-0"><?= Html::encode($this->title) ?></h1>
-        </div>
-        <div>
-            <?= Html::a(
+            <?= Html::button(
                     '<i class="bi bi-plus-lg me-2"></i> Aufgabe hinzufügen',
-                    ['create'],
-                    ['class' => 'btn btn-success btn-lg rounded-3 shadow px-4']
+                    [
+                            'value' => Url::to(['create']),
+                            'class' => 'btn btn-success btn-lg rounded-3 shadow px-4',
+                            'id' => 'modalButton'
+                    ]
             ) ?>
         </div>
-    </div>
-    <?php foreach ($sections as $title => $tasks): ?>
-        <?php if (!empty($tasks)): ?>
-            <h3 class="border-bottom pb-2 mb-3 mt-4 text-secondary"><?= $title ?></h3>
 
+        <?php
+        Modal::begin([
+                'title' => '<h4 class="mb-0">Neue Hausaufgabe</h4>',
+                'id' => 'modal',
+                'size' => 'modal-lg',
+        ]);
+        echo "<div id='modalContent'><div class='text-center p-4'><div class='spinner-border text-primary' role='status'></div></div></div>";
+        Modal::end();
+        ?>
+
+        <?php foreach ($sections as $title => $tasks): ?>
+            <?php if (!empty($tasks)): ?>
+                <h3 class="border-bottom pb-2 mb-3 mt-5 text-secondary small text-uppercase fw-bold"><?= $title ?></h3>
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+                    <?php foreach ($tasks as $task): ?>
+                        <?= $this->render('_homework_card', ['task' => $task, 'isFinished' => false, 'today' => $today]) ?>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        <?php endforeach; ?>
+
+        <?php if (!empty($finishedHomeworks)): ?>
+            <h3 class="border-bottom pb-2 mb-3 mt-5 text-success small text-uppercase fw-bold">Erledigt</h3>
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
-                <?php foreach ($tasks as $task):
-                    $dueDateTime = new DateTime($task->due_date);
-                    $now = new DateTime('today');
-                    $diff = $now->diff($dueDateTime);
-                    $daysRemaining = (int)$diff->format("%r%a");
-
-                    $badgeClass = 'bg-light text-dark border';
-
-                    if ($daysRemaining < 1) {
-                        $badgeClass = 'bg-danger text-white';
-                    } elseif ($daysRemaining < 7) {
-                        $badgeClass = 'bg-warning text-dark';
-                    } elseif ($daysRemaining < 14) {
-                        $badgeClass = 'bg-primary text-white';
-                    }
-                    ?>
-                    <div class="col">
-                        <div class="card h-100 shadow-sm hover-shadow" style="cursor: pointer;"
-                             onclick="window.location='<?= Url::to(['view', 'id' => $task->id]) ?>'">
-
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <h5 class="card-title text-primary mb-0">
-                                        <?= Html::encode($task->title) ?>
-                                    </h5>
-                                    <span class="badge <?= $badgeClass ?>">
-                        <?= Yii::$app->formatter->asDate($task->due_date, 'php:d.m.') ?>
-                    </span>
-                                </div>
-
-                                <p class="card-text text-muted small">
-                                    <i class="bi bi-calendar-event"></i>
-                                    <?= Yii::$app->formatter->asDate($task->due_date, 'php:l') ?>
-                                    <?php if ($daysRemaining == 0): ?>
-                                        <span class="text-danger fw-bold">(Heute fällig!)</span>
-                                    <?php elseif ($daysRemaining < 0): ?>
-                                        <span class="text-secondary fw-bold">(Überfällig!)</span>
-                                    <?php endif; ?>
-                                </p>
-                            </div>
-
-                            <div class="card-footer bg-transparent border-top-0 text-end">
-                                <?= Html::a('Details →', ['view', 'id' => $task->id], ['class' => 'btn btn-sm btn-outline-primary']) ?>
-                            </div>
-                        </div>
-                    </div>
+                <?php foreach ($finishedHomeworks as $task): ?>
+                    <?= $this->render('_homework_card', ['task' => $task, 'isFinished' => true, 'today' => $today]) ?>
                 <?php endforeach; ?>
             </div>
         <?php endif; ?>
-    <?php endforeach; ?>
 
-</div>
+    </div>
 
-<style>
-    .hover-shadow:hover {
-        transform: translateY(-3px);
-        transition: all 0.2s ease-in-out;
-        box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15)!important;
-    }
-    .card { transition: all 0.2s; }
-</style>
+    <style>
+        .wrap > .container, main > .container { padding-top: 0 !important; }
+        .homework-index { margin-top: -30px; }
+        .hover-shadow:hover { transform: translateY(-3px); transition: all 0.2s; box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15)!important; }
+        .card { transition: all 0.2s; border-radius: 12px; }
+        .is-finished { opacity: 0.6; background-color: #f8f9fa; border: 1px dashed #dee2e6 !important; filter: grayscale(0.5); }
+        .text-decoration-line-through { text-decoration: line-through !important; }
+    </style>
+
+<?php
+$toggleUrl = Url::to(['homework/toggle-status']);
+$js = <<<JS
+$(document).on('change', '.finish-checkbox', function() {
+    let checkbox = $(this);
+    let id = checkbox.data('id');
+
+    // Manually construct the URL with the ID to avoid routing issues
+    let targetUrl = '{$toggleUrl}' + ( '{$toggleUrl}'.includes('?') ? '&' : '?') + 'id=' + id;
+
+    $.ajax({
+        url: targetUrl,
+        type: 'POST',
+        // This line sends the security token Yii requires for POST requests
+        data: {
+            _csrf: yii.getCsrfToken() 
+        },
+        success: function(data) {
+            if (data.success) {
+                location.reload(); 
+            } else {
+                alert('Server error: ' + (data.error || 'Unknown error'));
+                checkbox.prop('checked', !checkbox.prop('checked'));
+            }
+        },
+        error: function(xhr) {
+            console.error("Status: " + xhr.status);
+            console.error("Response: " + xhr.responseText);
+            alert('Critical Error: Could not reach the server. (Status: ' + xhr.status + ')');
+        }
+    });
+});
+JS;
+$this->registerJs($js);
+?>
