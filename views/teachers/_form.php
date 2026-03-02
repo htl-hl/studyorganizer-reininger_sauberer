@@ -1,27 +1,64 @@
 <?php
-
 use yii\helpers\Html;
-use yii\widgets\ActiveForm;
-
-/** @var yii\web\View $this */
-/** @var app\models\Teachers $model */
-/** @var yii\widgets\ActiveForm $form */
+use yii\bootstrap5\ActiveForm;
+use yii\helpers\ArrayHelper;
+use app\models\Subjects;
 ?>
 
-<div class="teachers-form">
+    <div class="p-2">
+        <?php $form = ActiveForm::begin([
+                'id' => 'teachers-form-ajax',
+                'enableClientValidation' => true,
+        ]); ?>
 
-    <?php $form = ActiveForm::begin(); ?>
+        <div class="row">
+            <div class="col-md-6">
+                <?= $form->field($model, 'firstname')->textInput([
+                        'maxlength' => true,
+                        'class' => 'form-control form-control-sm bg-light border-0'
+                ])->label('Vorname') ?>
+            </div>
+            <div class="col-md-6">
+                <?= $form->field($model, 'lastname')->textInput([
+                        'maxlength' => true,
+                        'class' => 'form-control form-control-sm bg-light border-0'
+                ])->label('Nachname') ?>
+            </div>
+        </div>
 
-    <?= $form->field($model, 'firstname')->textInput(['maxlength' => true]) ?>
+        <?= $form->field($model, 'subject_id')->dropDownList(
+                ArrayHelper::map(Subjects::find()->where(['status' => 1])->all(), 'id', 'name'),
+                [
+                        'prompt' => 'Fach auswählen...',
+                        'class' => 'form-select form-select-sm bg-light border-0'
+                ]
+        )->label('Zugeordnetes Fach') ?>
 
-    <?= $form->field($model, 'lastname')->textInput(['maxlength' => true]) ?>
+        <?= $form->field($model, 'status')->dropDownList([
+                1 => 'Aktiv',
+                0 => 'Inaktiv'
+        ], ['class' => 'form-select form-select-sm bg-light border-0']) ?>
 
-    <?= $form->field($model, 'status')->textInput() ?>
+        <div class="mt-4 d-grid">
+            <?= Html::submitButton('Speichern', ['class' => 'btn btn-primary btn-sm rounded-pill shadow-sm']) ?>
+        </div>
 
-    <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+        <?php ActiveForm::end(); ?>
     </div>
 
-    <?php ActiveForm::end(); ?>
-
-</div>
+<?php
+$js = <<<JS
+$('form#teachers-form-ajax').on('beforeSubmit', function(e) {
+    var form = $(this);
+    $.post(form.attr("action"), form.serialize())
+        .done(function(result) {
+            if(result.success) {
+                $("#modal").modal('hide');
+                location.reload();
+            }
+        });
+    return false;
+});
+JS;
+$this->registerJs($js);
+?>
