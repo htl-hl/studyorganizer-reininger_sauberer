@@ -36,7 +36,7 @@ foreach ($activeHomeworks as $hw) {
             <?= Html::button(
                     '<i class="bi bi-plus-lg me-2"></i> Aufgabe hinzufügen',
                     [
-                            'value' => Url::to(['create']),
+                            'data-url' => Url::to(['homework/create']),
                             'class' => 'btn btn-success btn-lg rounded-3 shadow px-4',
                             'id' => 'modalButton'
                     ]
@@ -87,32 +87,64 @@ foreach ($activeHomeworks as $hw) {
 <?php
 $toggleUrl = Url::to(['homework/toggle-status']);
 $js = <<<JS
-$(document).on('change', '.finish-checkbox', function() {
-    let checkbox = $(this);
-    let id = checkbox.data('id');
+// --- 1. MODAL / ADD BUTTON LOGIC ---
+$(document).on('click', '#modalButton', function(e){
+    e.preventDefault();
+    var url = $(this).data('url');
+    var modal = new bootstrap.Modal(document.getElementById('modal'));
+    modal.show();
+    $('#modalContent').load(url);
+});
 
-    // Manually construct the URL with the ID to avoid routing issues
-    let targetUrl = '{$toggleUrl}' + ( '{$toggleUrl}'.includes('?') ? '&' : '?') + 'id=' + id;
+// --- 2. FORM SUBMIT LOGIC (Inside Modal) ---
+$(document).on('beforeSubmit', '#homework-form', function(e) {
+    var form = $(this);
+    $.ajax({
+        url: form.attr('action'),
+        type: 'POST',
+        data: form.serialize(),
+        dataType: 'json',
+        success: function(response) {
+            if (response.success === true) {
+                bootstrap.Modal.getInstance(document.getElementById('modal')).hide();
+                location.reload();
+            } else {
+                // If validation fails, update the form with error messages
+                form.yiiActiveForm('updateMessages', response, true);
+            }
+        }
+    });
+    return false;
+});
+
+// --- 3. CHECKBOX LOGIC ---
+$(document).on('change', '.finish-checkbox', function() {
+    var checkbox = $(this);
+    var id = checkbox.data('id');
+    
+    var csrfToken = yii.getCsrfToken();
+    var csrfParam = yii.getCsrfParam();
+    
+    var data = { id: id };
+    data[csrfParam] = csrfToken;
 
     $.ajax({
-        url: targetUrl,
+        url: '{$toggleUrl}',
         type: 'POST',
-        // This line sends the security token Yii requires for POST requests
-        data: {
-            _csrf: yii.getCsrfToken() 
-        },
+        data: data,
+        dataType: 'json',
         success: function(data) {
             if (data.success) {
                 location.reload(); 
             } else {
-                alert('Server error: ' + (data.error || 'Unknown error'));
+                alert('Fehler: ' + (data.error || 'Unbekannter Fehler'));
                 checkbox.prop('checked', !checkbox.prop('checked'));
             }
         },
         error: function(xhr) {
             console.error("Status: " + xhr.status);
-            console.error("Response: " + xhr.responseText);
-            alert('Critical Error: Could not reach the server. (Status: ' + xhr.status + ')');
+            alert('Server-Fehler: ' + xhr.status);
+            checkbox.prop('checked', !checkbox.prop('checked'));
         }
     });
 });
