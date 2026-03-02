@@ -32,13 +32,22 @@ class HomeworkController extends Controller
 
     public function actionIndex()
     {
-        $homeworks = Homework::find()
-            ->where(['user_id' => Yii::$app->user->id])
+
+        $activeHomeworks = Homework::find()
+            ->where(['!=', 'status', 'Finished'])
+            ->orWhere(['status' => null])
             ->orderBy(['due_date' => SORT_ASC])
             ->all();
 
+
+        $finishedHomeworks = Homework::find()
+            ->where(['status' => 'Finished'])
+            ->orderBy(['due_date' => SORT_DESC])
+            ->all();
+
         return $this->render('index', [
-            'homeworks' => $homeworks,
+            'activeHomeworks' => $activeHomeworks,
+            'finishedHomeworks' => $finishedHomeworks,
         ]);
     }
 
@@ -48,14 +57,17 @@ class HomeworkController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             $model->user_id = Yii::$app->user->id;
+
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
             if ($model->save()) {
-                return $this->redirect(['index']);
+                return ['success' => true];
+            } else {
+                return \yii\bootstrap5\ActiveForm::validate($model);
             }
         }
 
-        return $this->render('create', [
-            'model' => $model,
-        ]);
+        return $this->renderAjax('create', ['model' => $model]);
     }
 
     public function actionView($id)
@@ -81,5 +93,28 @@ class HomeworkController extends Controller
         return ArrayHelper::map($teachers, 'id', function($t){
             return $t->firstname . ' ' . $t->lastname;
         });
+    }
+
+    public function actionToggleStatus() // Remove ($id) from here
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        // Get ID from POST data instead of URL parameter
+        $id = Yii::$app->request->post('id');
+        $model = Homework::findOne($id);
+
+        if ($model) {
+            // Basic security check: ensure the user owns this task
+            if ($model->user_id !== Yii::$app->user->id) {
+                return ['success' => false, 'error' => 'Unauthorized'];
+            }
+
+            $model->status = ($model->status === 'Finished') ? 'Open' : 'Finished';
+            if ($model->save()) {
+                return ['success' => true, 'newStatus' => $model->status];
+            }
+        }
+
+        return ['success' => false, 'error' => 'Model not found or save failed'];
     }
 }

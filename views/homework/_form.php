@@ -4,7 +4,11 @@ use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
 use app\models\Subjects;
 
-$form = ActiveForm::begin();
+$form = ActiveForm::begin([
+        'id' => 'homework-form',
+        'enableClientValidation' => true, // Ensure this is true
+        'enableAjaxValidation' => false,
+]);
 ?>
 
     <div class="row">
@@ -29,15 +33,33 @@ $form = ActiveForm::begin();
             ) ?>
         </div>
         <div class="col-md-6">
+            <?php
+            $teachers = [];
+
+            if ($model->subject_id) {
+                $teachers = \app\models\Teachers::find()
+                        ->innerJoin('Subject_Has_Teacher sht', 'sht.teacher_id = Teachers.id')
+                        ->where(['sht.subject_id' => $model->subject_id])
+                        ->all();
+
+                $teachers = \yii\helpers\ArrayHelper::map($teachers, 'id', function($t){
+                    return $t->firstname . ' ' . $t->lastname;
+                });
+            }
+            ?>
+
             <?= $form->field($model, 'teacher_id')->dropDownList(
-                    [],
-                    ['prompt' => 'Zuerst Fach wählen', 'id' => 'teacher-id', 'class' => 'form-select']
+                    $teachers,
+                    ['prompt' => 'Lehrer auswählen', 'id' => 'teacher-id', 'class' => 'form-select']
             ) ?>
         </div>
     </div>
 
     <div class="form-group mt-4">
-        <?= Html::submitButton('Aufgabe speichern', ['class' => 'btn btn-primary w-100 shadow-sm']) ?>
+        <?= Html::submitButton('Aufgabe speichern', [
+                'class' => 'btn btn-primary w-100 shadow-sm',
+                'id' => 'save-button' // Add an ID for testing
+        ]) ?>
     </div>
 
 <?php ActiveForm::end(); ?>
