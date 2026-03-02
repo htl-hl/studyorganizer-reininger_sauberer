@@ -33,12 +33,11 @@ $this->title = 'Fächerverwaltung';
                         'columns' => [
                                 [
                                         'attribute' => 'name',
-                                        'contentOptions' => ['class' => 'fw-bold py-3'],
                                 ],
                                 [
                                         'attribute' => 'status',
+                                        'label' => 'Status',
                                         'format' => 'raw',
-                                        'contentOptions' => ['class' => 'text-center'],
                                         'value' => function ($model) {
                                             return $model->status
                                                     ? '<span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3">Aktiv</span>'

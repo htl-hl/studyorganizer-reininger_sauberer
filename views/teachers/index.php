@@ -29,11 +29,10 @@ $this->title = 'Lehrerverwaltung';
                         'summary' => false,
                         'columns' => [
                                 [
-                                        'label' => 'Name des Lehrers',
+                                        'label' => 'Name',
                                         'value' => function($model) {
                                             return $model->firstname . ' ' . $model->lastname;
                                         },
-                                        'contentOptions' => ['class' => 'fw-bold py-3'],
                                 ],
                                 [
                                         'attribute' => 'subject_id',
