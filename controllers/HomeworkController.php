@@ -55,24 +55,19 @@ class HomeworkController extends Controller
     {
         $model = new Homework();
 
-        if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['index']);
+        if ($model->load(Yii::$app->request->post())) {
+            $model->user_id = Yii::$app->user->id;
+
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+            if ($model->save()) {
+                return ['success' => true];
+            } else {
+                return \yii\bootstrap5\ActiveForm::validate($model);
             }
-        } else {
-            $model->loadDefaultValues();
         }
 
-        // Use renderAjax instead of render
-        if (Yii::$app->request->isAjax) {
-            return $this->renderAjax('create', [
-                'model' => $model,
-            ]);
-        }
-
-        return $this->render('create', [
-            'model' => $model,
-        ]);
+        return $this->renderAjax('create', ['model' => $model]);
     }
 
     public function actionView($id)
@@ -100,20 +95,26 @@ class HomeworkController extends Controller
         });
     }
 
-    public function actionToggleStatus($id)
+    public function actionToggleStatus() // Remove ($id) from here
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
-        // We allow both POST and GET for this test to ensure it works
+        // Get ID from POST data instead of URL parameter
+        $id = Yii::$app->request->post('id');
         $model = Homework::findOne($id);
 
         if ($model) {
+            // Basic security check: ensure the user owns this task
+            if ($model->user_id !== Yii::$app->user->id) {
+                return ['success' => false, 'error' => 'Unauthorized'];
+            }
+
             $model->status = ($model->status === 'Finished') ? 'Open' : 'Finished';
             if ($model->save()) {
                 return ['success' => true, 'newStatus' => $model->status];
             }
         }
 
-        return ['success' => false, 'error' => 'Model not found or not saved'];
+        return ['success' => false, 'error' => 'Model not found or save failed'];
     }
 }
