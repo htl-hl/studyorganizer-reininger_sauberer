@@ -1,20 +1,9 @@
 <?php
-
-use yii\helpers\Html;
-
-/** @var yii\web\View $this */
 /** @var app\models\Teachers $model */
-
-$this->title = 'Create Teachers';
-$this->params['breadcrumbs'][] = ['label' => 'Teachers', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+/** @var array $subjects */ // Das ist die Liste aus dem Controller
 ?>
-<div class="teachers-create">
 
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <?= $this->render('_form', [
+<?= $this->render('_form', [
         'model' => $model,
-    ]) ?>
-
-</div>
+        'subjects' => $subjects, // Hier wird die Variable an das Formular durchgereicht
+]) ?>

@@ -34,7 +34,7 @@ class Teachers extends \yii\db\ActiveRecord
     {
         return [
             [['firstname', 'lastname', 'status'], 'required'],
-            [['status'], 'integer'],
+            [['status', 'subject_id'], 'integer'],
             [['firstname', 'lastname'], 'string', 'max' => 50],
         ];
     }
@@ -67,9 +67,9 @@ class Teachers extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getSubjects()
+    public function getSubject()
     {
-        return $this->hasMany(Subjects::class, ['id' => 'subject_id'])->viaTable('Subject_Has_Teacher', ['teacher_id' => 'id']);
+        return $this->hasOne(Subjects::class, ['id' => 'subject_id']);
     }
 
 }

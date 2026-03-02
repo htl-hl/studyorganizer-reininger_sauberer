@@ -32,16 +32,20 @@ class HomeworkController extends Controller
 
     public function actionIndex()
     {
+        $currentUserId = Yii::$app->user->id;
 
+        // Nur aktive Aufgaben des aktuellen Users laden
         $activeHomeworks = Homework::find()
-            ->where(['!=', 'status', 'Finished'])
-            ->orWhere(['status' => null])
+            ->where(['user_id' => $currentUserId]) // Filter auf User
+            ->andWhere(['!=', 'status', 'Finished'])
+            ->orWhere(['and', ['user_id' => $currentUserId], ['status' => null]])
             ->orderBy(['due_date' => SORT_ASC])
             ->all();
 
-
+        // Nur erledigte Aufgaben des aktuellen Users laden
         $finishedHomeworks = Homework::find()
-            ->where(['status' => 'Finished'])
+            ->where(['user_id' => $currentUserId]) // Filter auf User
+            ->andWhere(['status' => 'Finished'])
             ->orderBy(['due_date' => SORT_DESC])
             ->all();
 
@@ -85,9 +89,9 @@ class HomeworkController extends Controller
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
 
+        // Wir suchen einfach alle Lehrer, die dieses Fach (subject_id) eingetragen haben
         $teachers = Teachers::find()
-            ->innerJoin('Subject_Has_Teacher sht', 'sht.teacher_id = Teachers.id')
-            ->where(['sht.subject_id' => $id])
+            ->where(['subject_id' => $id, 'status' => 1]) // Nur aktive Lehrer
             ->all();
 
         return ArrayHelper::map($teachers, 'id', function($t){

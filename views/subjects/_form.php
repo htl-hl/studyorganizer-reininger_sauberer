@@ -1,25 +1,44 @@
 <?php
-
 use yii\helpers\Html;
-use yii\widgets\ActiveForm;
-
-/** @var yii\web\View $this */
-/** @var app\models\Subjects $model */
-/** @var yii\widgets\ActiveForm $form */
+use yii\bootstrap5\ActiveForm;
 ?>
 
-<div class="subjects-form">
+    <div class="p-2">
+        <?php $form = ActiveForm::begin([
+                'id' => 'subjects-form-ajax',
+                'enableClientValidation' => true,
+        ]); ?>
 
-    <?php $form = ActiveForm::begin(); ?>
+        <?= $form->field($model, 'name')->textInput([
+                'maxlength' => true,
+                'class' => 'form-control form-control-md bg-light border-0'
+        ])->label('Fachname') ?>
 
-    <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+        <?= $form->field($model, 'status')->dropDownList([
+                1 => 'Aktiv',
+                0 => 'Inaktiv'
+        ], ['class' => 'form-select form-select-md bg-light border-0']) ?>
 
-    <?= $form->field($model, 'status')->textInput() ?>
+        <div class="mt-4 d-grid">
+            <?= Html::submitButton('Speichern', ['class' => 'btn btn-primary']) ?>
+        </div>
 
-    <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+        <?php ActiveForm::end(); ?>
     </div>
 
-    <?php ActiveForm::end(); ?>
-
-</div>
+<?php
+$js = <<<JS
+$('form#subjects-form-ajax').on('beforeSubmit', function(e) {
+    var form = $(this);
+    $.post(form.attr("action"), form.serialize())
+        .done(function(result) {
+            if(result.success) {
+                $("#modal").modal('hide');
+                location.reload();
+            }
+        });
+    return false;
+});
+JS;
+$this->registerJs($js);
+?>

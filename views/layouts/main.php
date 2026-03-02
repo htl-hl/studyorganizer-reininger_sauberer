@@ -57,6 +57,15 @@ $this->registerCsrfMetaTags();
         if (Yii::$app->user->isGuest) {
             $items[] = ['label' => 'Login', 'url' => ['/site/login']];
             $items[] = ['label' => 'Registrieren', 'url' => ['/site/register']];
+        } elseif (Yii::$app->user->identity->role === 'admin') {
+            $items[] = ['label' => 'Lehrer', 'url' => ['teachers/index']];
+            $items[] = ['label' => 'Fächer', 'url' => ['subjects/index']];
+            $items[] = ['label' => 'Hausaufgaben', 'url' => ['/homework/index']];
+            $items[] = [
+                    'label' => 'Logout (' . Yii::$app->user->identity->username . ')',
+                    'url' => ['/site/logout'],
+                    'linkOptions' => ['data-method' => 'post', 'class' => 'nav-link btn btn-link text-warning']
+            ];
         } else {
             $items[] = ['label' => 'Hausaufgaben', 'url' => ['/homework/index']];
             $items[] = [
