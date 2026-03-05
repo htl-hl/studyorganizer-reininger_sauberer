@@ -68,7 +68,7 @@ $iconLogout = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fi
     <header id="header">
         <?php
         NavBar::begin([
-                'brandLabel' => 'StudyOrganizer',
+                'brandLabel' => 'Study<span class="text-primary">Organizer</span>',
                 'brandUrl' => Yii::$app->homeUrl,
                 'options' => ['class' => 'navbar-expand-md navbar-dark bg-dark fixed-top']
         ]);

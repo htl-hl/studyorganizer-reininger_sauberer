@@ -131,21 +131,18 @@ class HomeworkController extends Controller
 
     public function actionUpdate($id)
     {
-        $model = Homework::findOne(['id' => $id, 'user_id' => Yii::$app->user->id]);
-
-        if (!$model) {
-            throw new \yii\web\ForbiddenHttpException('Zugriff verweigert.');
-        }
+        $model = Homework::findOne($id);
 
         if ($model->load(Yii::$app->request->post())) {
-            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-            if ($model->save()) {
-                return ['success' => true];
+            if (Yii::$app->request->isAjax) {
+                Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                return ['success' => $model->save()];
             }
-            return \yii\bootstrap5\ActiveForm::validate($model);
+            if ($model->save()) {
+                return $this->redirect(['index']);
+            }
         }
 
-        // This is the key: renderAjax avoids loading the layout (header/footer) inside the modal
         return $this->renderAjax('update', [
             'model' => $model,
         ]);

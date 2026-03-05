@@ -24,11 +24,11 @@ $this->title = 'StudyOrganizer';
             <?php elseif (Yii::$app->user->identity->role === 'admin'): ?>
                 <a class="btn-custom btn-dark-flat" href="<?= Url::to(['/teachers/index']) ?>">
                     <i class="bi bi-people-fill"></i>
-                    <span>Lehrer-Base</span>
+                    <span>Lehrer</span>
                 </a>
                 <a class="btn-custom btn-dark-outline" href="<?= Url::to(['/subjects/index']) ?>">
                     <i class="bi bi-book-half"></i>
-                    <span>Fach-Inventar</span>
+                    <span>Fächer</span>
                 </a>
             <?php else: ?>
                 <a class="btn-custom btn-primary-gradient" href="<?= Url::to(['/homework/index']) ?>">
