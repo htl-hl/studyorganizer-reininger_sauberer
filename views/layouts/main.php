@@ -12,6 +12,10 @@ use yii\bootstrap5\NavBar;
 AppAsset::register($this);
 
 $this->registerCsrfMetaTags();
+
+$iconLogin = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">  <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>  <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/></svg>';
+$iconLogout = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-door-open-fill" viewBox="0 0 16 16">  <path d="M1.5 15a.5.5 0 0 0 0 1h13a.5.5 0 0 0 0-1H13V2.5A1.5 1.5 0 0 0 11.5 1H11V.5a.5.5 0 0 0-.57-.495l-7 1A.5.5 0 0 0 3 1.5V15zM11 2h.5a.5.5 0 0 1 .5.5V15h-1zm-2.5 8c-.276 0-.5-.448-.5-1s.224-1 .5-1 .5.448.5 1-.224 1-.5 1"/></svg>';
+
 ?>
 <?php $this->beginPage() ?>
     <!DOCTYPE html>
@@ -24,22 +28,10 @@ $this->registerCsrfMetaTags();
         <style>
             body { background-color: #f8f9fa; }
             #main { padding-top: 80px; }
-
-            .auth-container {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                min-height: 70vh;
-            }
-            .auth-box {
-                background: #fff;
-                padding: 2rem;
-                border-radius: 1rem;
-                box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-                width: 100%;
-                max-width: 400px;
-            }
+            .auth-container { display: flex; justify-content: center; align-items: center; min-height: 70vh; }
+            .auth-box { background: #fff; padding: 2rem; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 400px; }
             .navbar { box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+            .logout-btn { background: none; border: none; padding: 0; }
         </style>
     </head>
     <body class="d-flex flex-column h-100">
@@ -55,28 +47,28 @@ $this->registerCsrfMetaTags();
 
         $items = [];
         if (Yii::$app->user->isGuest) {
-            $items[] = ['label' => 'Login', 'url' => ['/site/login']];
-            $items[] = ['label' => 'Registrieren', 'url' => ['/site/register']];
-        } elseif (Yii::$app->user->identity->role === 'admin') {
-            $items[] = ['label' => 'Lehrer', 'url' => ['teachers/index']];
-            $items[] = ['label' => 'Fächer', 'url' => ['subjects/index']];
-            $items[] = ['label' => 'Hausaufgaben', 'url' => ['/homework/index']];
-            $items[] = [
-                    'label' => 'Logout (' . Yii::$app->user->identity->username . ')',
-                    'url' => ['/site/logout'],
-                    'linkOptions' => ['data-method' => 'post', 'class' => 'nav-link btn btn-link text-warning']
-            ];
+            $items[] = ['label' => $iconLogin, 'url' => ['/site/login']];
         } else {
-            $items[] = ['label' => 'Hausaufgaben', 'url' => ['/homework/index']];
+            if (Yii::$app->user->identity->role === 'admin') {
+                $items[] = ['label' => 'Lehrer', 'url' => ['/teachers/index']];
+                $items[] = ['label' => 'Fächer', 'url' => ['/subjects/index']];
+            } else {
+                $items[] = ['label' => 'Hausaufgaben', 'url' => ['/homework/index']];
+            }
+
             $items[] = [
-                    'label' => 'Logout (' . Yii::$app->user->identity->username . ')',
+                    'label' => $iconLogout . ' (' . Yii::$app->user->identity->username . ')',
                     'url' => ['/site/logout'],
-                    'linkOptions' => ['data-method' => 'post', 'class' => 'nav-link btn btn-link text-warning']
+                    'linkOptions' => [
+                            'data-method' => 'post',
+                            'class' => 'nav-link btn btn-link text-warning'
+                    ]
             ];
         }
 
         echo Nav::widget([
                 'options' => ['class' => 'navbar-nav ms-auto'],
+                'encodeLabels' => false,
                 'items' => $items,
         ]);
         NavBar::end();
@@ -86,7 +78,6 @@ $this->registerCsrfMetaTags();
     <main id="main" class="flex-shrink-0" role="main">
         <div class="container">
             <?= Alert::widget() ?>
-
             <?php
             $action = Yii::$app->controller->action->id;
             if (in_array($action, ['login', 'register'])): ?>
@@ -102,8 +93,8 @@ $this->registerCsrfMetaTags();
     </main>
 
     <footer id="footer" class="mt-auto py-3 bg-white border-top">
-        <div class="container">
-            <div class="row text-muted small">
+        <div class="container text-muted small">
+            <div class="row">
                 <div class="col-md-6 text-center text-md-start">&copy; StudyOrganizer <?= date('Y') ?></div>
                 <div class="col-md-6 text-center text-md-end">Effizientes Lernen leicht gemacht</div>
             </div>

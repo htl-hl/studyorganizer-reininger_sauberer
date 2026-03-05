@@ -17,8 +17,11 @@ $this->title = 'My Yii Application';
 
                 <?php if (Yii::$app->user->isGuest): ?>
                     <a class="btn btn-primary btn-lg px-5" href="<?= \yii\helpers\Url::to(['/site/login']) ?>">Login</a>
+                <?php elseif (Yii::$app->user->identity->role === 'admin'): ?>
+                    <a class="btn btn-primary btn-lg px-5" href="<?= \yii\helpers\Url::to(['/teachers/index']) ?>">Lehrer</a>
+                    <a class="btn btn-primary btn-lg px-5" href="<?= \yii\helpers\Url::to(['/subjects/index']) ?>">Fächer</a>
                 <?php else: ?>
-                    <a class="btn btn-success btn-lg px-5" href="<?= \yii\helpers\Url::to(['/homework/index']) ?>">Homework</a>
+                    <a class="btn btn-success btn-lg px-5" href="<?= \yii\helpers\Url::to(['/homework/index']) ?>">Hausaufgaben</a>
                 <?php endif; ?>
             </div>
         </div>
