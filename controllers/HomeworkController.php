@@ -25,6 +25,9 @@ class HomeworkController extends Controller
                     [
                         'allow' => true,
                         'roles' => ['@'],
+                        'matchCallback' => function ($rule, $action) {
+                            return Yii::$app->user->identity->role !== 'admin';
+                        }
                     ],
                 ],
             ],
@@ -43,17 +46,15 @@ class HomeworkController extends Controller
     {
         $currentUserId = Yii::$app->user->id;
 
-        // Nur aktive Aufgaben des aktuellen Users laden
         $activeHomeworks = Homework::find()
-            ->where(['user_id' => $currentUserId]) // Filter auf User
+            ->where(['user_id' => $currentUserId])
             ->andWhere(['!=', 'status', 'Finished'])
             ->orWhere(['and', ['user_id' => $currentUserId], ['status' => null]])
             ->orderBy(['due_date' => SORT_ASC])
             ->all();
 
-        // Nur erledigte Aufgaben des aktuellen Users laden
         $finishedHomeworks = Homework::find()
-            ->where(['user_id' => $currentUserId]) // Filter auf User
+            ->where(['user_id' => $currentUserId])
             ->andWhere(['status' => 'Finished'])
             ->orderBy(['due_date' => SORT_DESC])
             ->all();
@@ -98,9 +99,8 @@ class HomeworkController extends Controller
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
 
-        // Wir suchen einfach alle Lehrer, die dieses Fach (subject_id) eingetragen haben
         $teachers = Teachers::find()
-            ->where(['subject_id' => $id, 'status' => 1]) // Nur aktive Lehrer
+            ->where(['subject_id' => $id, 'status' => 1])
             ->all();
 
         return ArrayHelper::map($teachers, 'id', function($t){
@@ -108,16 +108,14 @@ class HomeworkController extends Controller
         });
     }
 
-    public function actionToggleStatus() // Remove ($id) from here
+    public function actionToggleStatus()
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
-        // Get ID from POST data instead of URL parameter
         $id = Yii::$app->request->post('id');
         $model = Homework::findOne($id);
 
         if ($model) {
-            // Basic security check: ensure the user owns this task
             if ($model->user_id !== Yii::$app->user->id) {
                 return ['success' => false, 'error' => 'Unauthorized'];
             }
