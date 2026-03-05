@@ -10,10 +10,10 @@ use yii\bootstrap5\ActiveForm;
 
     <div class="row g-3">
         <div class="col-md-6">
-            <?= $form->field($model, 'firstname')->textInput(['maxlength' => true, 'placeholder' => 'Vorname']) ?>
+            <?= $form->field($model, 'firstname')->textInput(['maxlength' => true, 'placeholder' => 'Vorname'])->label('Vorname') ?>
         </div>
         <div class="col-md-6">
-            <?= $form->field($model, 'lastname')->textInput(['maxlength' => true, 'placeholder' => 'Nachname']) ?>
+            <?= $form->field($model, 'lastname')->textInput(['maxlength' => true, 'placeholder' => 'Nachname'])->label('Nachname') ?>
         </div>
     </div>
 
