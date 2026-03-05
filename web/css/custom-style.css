@@ -1,0 +1,54 @@
+.btn-custom {
+    text-decoration: none !important;
+    height: 60px;
+    min-width: 230px;
+
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    /* OPTICAL CORRECTION:
+       Wir geben links etwas weniger Padding als rechts (22px zu 28px),
+       um das schwere Icon auf der linken Seite auszugleichen. */
+    padding-left: 22px !important;
+    padding-right: 28px !important;
+
+    gap: 10px;
+    line-height: 1 !important;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+/* Verhindert jegliche Störfaktoren */
+.btn-custom i,
+.btn-custom svg {
+    margin: 0 !important;
+    padding: 0 !important;
+    flex-shrink: 0; /* Verhindert, dass das Icon gequetscht wird */
+}
+
+.btn-custom span {
+    margin: 0 !important;
+    padding: 0 !important;
+    white-space: nowrap; /* Verhindert Zeilenumbruch im Button */
+}
+
+/* Farben wie gehabt */
+.btn-primary-gradient {
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+    color: white !important;
+}
+
+.btn-dark-flat {
+    background: #212529;
+    color: white !important;
+}
+
+.btn-dark-outline {
+    background: white;
+    color: #212529 !important;
+    border: 2px solid #212529 !important;
+}

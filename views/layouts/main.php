@@ -20,27 +20,55 @@ $iconLogout = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fi
 <?php $this->beginPage() ?>
     <!DOCTYPE html>
     <html lang="<?= Yii::$app->language ?>" class="h-100">
-    <head>
-        <meta charset="<?= Yii::$app->charset ?>">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title><?= Html::encode($this->title) ?></title>
-        <?php $this->head() ?>
-        <style>
-            body { background-color: #f8f9fa; }
-            #main { padding-top: 80px; }
-            .auth-container { display: flex; justify-content: center; align-items: center; min-height: 70vh; }
-            .auth-box { background: #fff; padding: 2rem; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 400px; }
-            .navbar { box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-            .logout-btn { background: none; border: none; padding: 0; }
-        </style>
-    </head>
+<head>
+    <meta charset="<?= Yii::$app->charset ?>">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title><?= Html::encode($this->title) ?></title>
+
+    <?php $this->registerCssFile('@web/css/custom-style.css'); ?>
+
+    <?php $this->head() ?>
+
+    <style>
+        /* Nur noch Layout-spezifische Regeln hier behalten */
+        body { background-color: #f8f9fa; }
+        #main { padding-top: 80px; }
+
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 70vh;
+        }
+
+        .auth-box {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .navbar {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Sorgt dafür, dass Nav-Icons und Text auf einer Linie sind */
+        .nav-link {
+            display: flex !important;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
+</head>
     <body class="d-flex flex-column h-100">
     <?php $this->beginBody() ?>
 
     <header id="header">
         <?php
         NavBar::begin([
-                'brandLabel' => 'StudyOrganizer',
+                'brandLabel' => 'Study<span class="text-primary">Organizer</span>',
                 'brandUrl' => Yii::$app->homeUrl,
                 'options' => ['class' => 'navbar-expand-md navbar-dark bg-dark fixed-top']
         ]);
