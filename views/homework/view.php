@@ -1,6 +1,8 @@
 <?php
 
+use yii\bootstrap5\Modal;
 use yii\helpers\Html;
+use yii\helpers\Url;
 
 /** @var yii\web\View $this */
 /** @var app\models\Homework $model */
@@ -18,7 +20,11 @@ $statusClass = $model->status === 'Completed' ? 'bg-success' : 'bg-warning text-
 <div class="homework-view container mt-4">
 
     <div class="d-flex gap-2">
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-outline-primary px-4']) ?>
+        <?= Html::button('Update', [
+                'value' => Url::to(['homework/update', 'id' => $model->id]),
+                'class' => 'btn btn-outline-primary px-4 modal-trigger-button',
+                'id' => 'modalButton'
+        ]) ?>
 
         <?= Html::a('Delete', ['delete', 'id' => $model->id], [
                 'class' => 'btn btn-outline-danger px-4',
@@ -80,3 +86,46 @@ $statusClass = $model->status === 'Completed' ? 'bg-success' : 'bg-warning text-
         </div>
     </div>
 </div>
+
+<?php
+// 2. ADD THE MODAL HTML (Needed on this page too!)
+Modal::begin([
+        'title' => '<h4 class="mb-0">Hausaufgabe bearbeiten</h4>',
+        'id' => 'modal',
+        'size' => 'modal-lg',
+]);
+echo "<div id='modalContent'><div class='text-center p-4'><div class='spinner-border text-primary' role='status'></div></div></div>";
+Modal::end();
+
+// 3. REGISTER THE JS (Reuse your logic from Index)
+$js = <<<JS
+$(document).on('click', '.update-modal-click', function(e){
+    e.preventDefault();
+    var url = $(this).attr('value');
+    var modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('modal'));
+    $('#modalContent').html('<div class="text-center p-4"><div class="spinner-border text-primary"></div></div>');
+    modal.show();
+    $('#modalContent').load(url);
+});
+
+$(document).on('beforeSubmit', '#homework-form', function(e) {
+    var form = $(this);
+    $.ajax({
+        url: form.attr('action'),
+        type: 'POST',
+        data: form.serialize(),
+        dataType: 'json',
+        success: function(response) {
+            if (response.success === true) {
+                bootstrap.Modal.getInstance(document.getElementById('modal')).hide();
+                location.reload();
+            } else {
+                form.yiiActiveForm('updateMessages', response, true);
+            }
+        }
+    });
+    return false;
+});
+JS;
+$this->registerJs($js);
+?>

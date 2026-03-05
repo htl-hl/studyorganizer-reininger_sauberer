@@ -137,11 +137,16 @@ class HomeworkController extends Controller
             throw new \yii\web\ForbiddenHttpException('Zugriff verweigert.');
         }
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($model->load(Yii::$app->request->post())) {
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            if ($model->save()) {
+                return ['success' => true];
+            }
+            return \yii\bootstrap5\ActiveForm::validate($model);
         }
 
-        return $this->render('update', [
+        // This is the key: renderAjax avoids loading the layout (header/footer) inside the modal
+        return $this->renderAjax('update', [
             'model' => $model,
         ]);
     }
