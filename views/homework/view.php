@@ -5,6 +5,8 @@ use yii\helpers\Html;
 /** @var yii\web\View $this */
 /** @var app\models\Homework $model */
 
+// Add this at the top of your view file
+\app\assets\AppAsset::register($this);
 $this->title = $model->title;
 $this->params['breadcrumbs'][] = ['label' => 'Homeworks', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;

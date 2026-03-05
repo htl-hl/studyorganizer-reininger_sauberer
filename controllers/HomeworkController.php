@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use Yii;
 use yii\data\ActiveDataProvider;
+use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\Response;
 use yii\web\ForbiddenHttpException;
@@ -25,6 +26,14 @@ class HomeworkController extends Controller
                         'allow' => true,
                         'roles' => ['@'],
                     ],
+                ],
+            ],
+            // ADD THIS SECTION:
+            'verbs' => [
+                'class' => VerbFilter::class,
+                'actions' => [
+                    'delete' => ['POST'],
+                    'toggle-status' => ['POST'],
                 ],
             ],
         ];
@@ -120,5 +129,33 @@ class HomeworkController extends Controller
         }
 
         return ['success' => false, 'error' => 'Model not found or save failed'];
+    }
+
+    public function actionUpdate($id)
+    {
+        $model = Homework::findOne(['id' => $id, 'user_id' => Yii::$app->user->id]);
+
+        if (!$model) {
+            throw new \yii\web\ForbiddenHttpException('Zugriff verweigert.');
+        }
+
+        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
+            return $this->redirect(['view', 'id' => $model->id]);
+        }
+
+        return $this->render('update', [
+            'model' => $model,
+        ]);
+    }
+
+    public function actionDelete($id)
+    {
+        $model = Homework::findOne(['id' => $id, 'user_id' => Yii::$app->user->id]);
+
+        if ($model) {
+            $model->delete();
+        }
+
+        return $this->redirect(['index']);
     }
 }
