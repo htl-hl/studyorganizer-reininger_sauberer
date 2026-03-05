@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use Yii;
 use yii\data\ActiveDataProvider;
+use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\Response;
 use yii\web\ForbiddenHttpException;
@@ -28,6 +29,14 @@ class HomeworkController extends Controller
                             return Yii::$app->user->identity->role !== 'admin';
                         }
                     ],
+                ],
+            ],
+            // ADD THIS SECTION:
+            'verbs' => [
+                'class' => VerbFilter::class,
+                'actions' => [
+                    'delete' => ['POST'],
+                    'toggle-status' => ['POST'],
                 ],
             ],
         ];
@@ -118,5 +127,38 @@ class HomeworkController extends Controller
         }
 
         return ['success' => false, 'error' => 'Model not found or save failed'];
+    }
+
+    public function actionUpdate($id)
+    {
+        $model = Homework::findOne(['id' => $id, 'user_id' => Yii::$app->user->id]);
+
+        if (!$model) {
+            throw new \yii\web\ForbiddenHttpException('Zugriff verweigert.');
+        }
+
+        if ($model->load(Yii::$app->request->post())) {
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            if ($model->save()) {
+                return ['success' => true];
+            }
+            return \yii\bootstrap5\ActiveForm::validate($model);
+        }
+
+        // This is the key: renderAjax avoids loading the layout (header/footer) inside the modal
+        return $this->renderAjax('update', [
+            'model' => $model,
+        ]);
+    }
+
+    public function actionDelete($id)
+    {
+        $model = Homework::findOne(['id' => $id, 'user_id' => Yii::$app->user->id]);
+
+        if ($model) {
+            $model->delete();
+        }
+
+        return $this->redirect(['index']);
     }
 }
