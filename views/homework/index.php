@@ -88,11 +88,19 @@ foreach ($activeHomeworks as $hw) {
 $toggleUrl = Url::to(['homework/toggle-status']);
 $js = <<<JS
 // --- 1. MODAL / ADD BUTTON LOGIC ---
-$(document).on('click', '#modalButton', function(e){
+// This will now work for BOTH Create and Update buttons
+$(document).on('click', '#modalButton, .update-modal-click', function(e){
     e.preventDefault();
-    var url = $(this).data('url');
-    var modal = new bootstrap.Modal(document.getElementById('modal'));
+    
+    // Check if it's the ID button or the Class button to get the URL
+    var url = $(this).data('url') || $(this).attr('value');
+    
+    var modalElement = document.getElementById('modal');
+    var modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+    
+    $('#modalContent').html('<div class="text-center p-4"><div class="spinner-border text-primary"></div></div>');
     modal.show();
+    
     $('#modalContent').load(url);
 });
 
