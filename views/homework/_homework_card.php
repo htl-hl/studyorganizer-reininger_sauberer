@@ -48,8 +48,8 @@ if (!$isFinished) {
                 <input class="form-check-input finish-checkbox"
                        type="checkbox"
                        data-id="<?= $task->id ?>"
-                    <?= $isFinished ? 'checked' : '' ?>
-                       onclick="event.stopPropagation();">
+                       data-toggle-url="<?= Url::to(['homework/toggle-status']) ?>"
+                        <?= $isFinished ? 'checked' : '' ?>>
                 <label class="form-check-label small text-muted">Erledigt</label>
             </div>
             <?= Html::a('Details →', ['view', 'id' => $task->id], ['class' => 'btn btn-sm btn-outline-primary']) ?>
