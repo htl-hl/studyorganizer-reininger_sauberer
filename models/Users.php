@@ -43,10 +43,10 @@ class Users extends \yii\db\ActiveRecord
     {
         return [
             'id' => Yii::t('app', 'ID'),
-            'username' => Yii::t('app', 'Username'),
-            'password' => Yii::t('app', 'Password'),
-            'firstname' => Yii::t('app', 'Firstname'),
-            'lastname' => Yii::t('app', 'Lastname'),
+            'username' => Yii::t('app', 'Benutzername'),
+            'password' => Yii::t('app', 'Passwort'),
+            'firstname' => Yii::t('app', 'Vorname'),
+            'lastname' => Yii::t('app', 'Nachname'),
         ];
     }
 }

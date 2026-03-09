@@ -29,6 +29,18 @@ class User extends ActiveRecord implements IdentityInterface
             [['lastname'], 'string', 'max' => 255]
         ];
     }
+
+    public function attributeLabels()
+    {
+        return [
+            'id' => Yii::t('app', 'ID'),
+            'username' => Yii::t('app', 'Benutzername'),
+            'password' => Yii::t('app', 'Passwort'),
+            'firstname' => Yii::t('app', 'Vorname'),
+            'lastname' => Yii::t('app', 'Nachname'),
+        ];
+    }
+
     public function validatePassword($password)
     {
         return Yii::$app->security->validatePassword($password, $this->password);

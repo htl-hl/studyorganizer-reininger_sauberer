@@ -48,10 +48,10 @@ class Homework extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'title' => 'Title',
-            'description' => 'Description',
-            'due_date' => 'Due Date',
+            'description' => 'Beschreibung',
+            'due_date' => 'Abgabedatum',
             'status' => 'Status',
-            'user_id' => 'User',
+            'user_id' => 'Benutzer',
             'subject_id' => 'Fach',
             'teacher_id' => 'Lehrer',
         ];
