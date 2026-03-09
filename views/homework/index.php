@@ -110,4 +110,11 @@ Modal::end();
     .hover-shadow:hover { transform: translateY(-3px); transition: all 0.2s; box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15)!important; }
     .card { transition: all 0.2s; border-radius: 12px; }
     .text-danger { color: #dc3545 !important; }
+    .is-finished {
+        opacity: 0.6;
+        background-color: #f8f9fa;
+        border: 1px dashed #dee2e6 !important;
+        filter: grayscale(0.7);
+    }
+    .is-finished .card-title { text-decoration: line-through; }
 </style>
