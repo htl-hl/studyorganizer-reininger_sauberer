@@ -16,8 +16,8 @@ $this->title = 'Registrieren';
 
 <?= $form->field($model, 'firstname')->textInput(['placeholder'=>'Vorname'])->label(false) ?>
 <?= $form->field($model, 'lastname')->textInput(['placeholder'=>'Nachname'])->label(false) ?>
-<?= $form->field($model, 'username')->textInput(['placeholder'=>'Username'])->label(false) ?>
-<?= $form->field($model, 'password')->passwordInput(['placeholder'=>'Password'])->label(false) ?>
+<?= $form->field($model, 'username')->textInput(['placeholder'=>'Benutzername'])->label(false) ?>
+<?= $form->field($model, 'password')->passwordInput(['placeholder'=>'Passwort'])->label(false) ?>
 
     <div class="checkbox">
         <?= $form->field($model, 'rememberMe')->checkbox(['label' => 'Angemeldet bleiben'])->label(false) ?>
