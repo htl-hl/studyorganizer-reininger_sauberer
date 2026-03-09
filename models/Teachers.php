@@ -46,8 +46,8 @@ class Teachers extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'firstname' => 'Firstname',
-            'lastname' => 'Lastname',
+            'firstname' => 'Vorname',
+            'lastname' => 'Nachname',
             'status' => 'Status',
         ];
     }

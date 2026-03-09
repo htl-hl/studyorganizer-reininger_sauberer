@@ -46,7 +46,7 @@ class Subjects extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
+            'name' => 'Fachname',
             'status' => 'Status',
         ];
     }

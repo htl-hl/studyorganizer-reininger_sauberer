@@ -22,6 +22,17 @@ class LoginForm extends Model
         ];
     }
 
+    public function attributeLabels()
+    {
+        return [
+            'id' => Yii::t('app', 'ID'),
+            'username' => Yii::t('app', 'Benutzername'),
+            'password' => Yii::t('app', 'Passwort'),
+            'firstname' => Yii::t('app', 'Vorname'),
+            'lastname' => Yii::t('app', 'Nachname'),
+        ];
+    }
+    
     public function login()
     {
         if ($this->validate()) {

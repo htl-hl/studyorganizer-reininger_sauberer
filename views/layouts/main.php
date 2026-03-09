@@ -30,7 +30,6 @@ $iconLogout = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fi
     <?php $this->head() ?>
 
     <style>
-        /* Nur noch Layout-spezifische Regeln hier behalten */
         body { background-color: #f8f9fa; }
         #main { padding-top: 80px; }
 
@@ -54,11 +53,31 @@ $iconLogout = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fi
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
-        /* Sorgt dafür, dass Nav-Icons und Text auf einer Linie sind */
+
         .nav-link {
             display: flex !important;
             align-items: center;
             gap: 8px;
+        }
+
+        .invalid-feedback,
+        .help-block,
+        .help-block-error {
+            color: #dc3545 !important;
+            font-weight: 500;
+            margin-top: 5px;
+        }
+
+        .is-invalid,
+        .has-error input,
+        .has-error select,
+        .has-error textarea {
+            border-color: #dc3545 !important;
+        }
+
+
+        .has-error label {
+            color: #dc3545;
         }
     </style>
 </head>
