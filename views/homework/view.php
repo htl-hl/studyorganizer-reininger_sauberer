@@ -23,9 +23,9 @@ $daysLeft = (int)$diff->format("%r%a");
 
             <div class="d-flex gap-2">
                 <?= Html::button('<i class="bi bi-pencil-square me-2"></i>Bearbeiten', [
-                        'class' => 'btn btn-outline-primary rounded-pill px-4 update-modal-click shadow-sm',
-                        'value' => Url::to(['homework/update', 'id' => $model->id]),
-                        'id' => 'modalButton'
+                        'class' => 'btn btn-outline-primary rounded-pill px-4 modal-trigger shadow-sm',
+                        'data-url' => Url::to(['homework/update', 'id' => $model->id]),
+                        'title' => 'Hausaufgabe bearbeiten'
                 ]) ?>
 
                 <?= Html::a('<i class="bi bi-trash3 me-2"></i>Löschen', ['delete', 'id' => $model->id], [
@@ -104,41 +104,21 @@ $daysLeft = (int)$diff->format("%r%a");
     </div>
 
 <?php
+$this->registerJsFile(
+        '@web/js/modal-handler.js',
+        [
+                'depends' => [\yii\web\JqueryAsset::class],
+                'position' => \yii\web\View::POS_END,
+        ]
+);
+
 Modal::begin([
-        'title' => '<h4 class="m-0 fw-bold">Hausaufgabe bearbeiten</h4>',
+        'title' => '',
         'id' => 'modal',
         'size' => 'modal-lg',
-        'headerOptions' => ['class' => 'bg-light border-0'],
 ]);
-echo "<div id='modalContent'><div class='text-center p-5'><div class='spinner-border text-primary' role='status'></div></div></div>";
+
+echo '<div id="modalContent"></div>';
+
 Modal::end();
-
-$js = <<<JS
-$(document).on('click', '.update-modal-click', function(e){
-    e.preventDefault();
-    var url = $(this).attr('value'); 
-    var modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('modal'));
-    $('#modalContent').html('<div class="text-center p-5"><div class="spinner-border text-primary"></div></div>');
-    modal.show();
-    $('#modalContent').load(url);
-});
-
-$(document).on('beforeSubmit', '#homework-form', function(e) {
-    var form = $(this);
-    $.ajax({
-        url: form.attr('action'),
-        type: 'POST',
-        data: form.serialize(),
-        dataType: 'json',
-        success: function(response) {
-            if (response.success === true) {
-                bootstrap.Modal.getInstance(document.getElementById('modal')).hide();
-                location.reload();
-            }
-        }
-    });
-    return false;
-});
-JS;
-$this->registerJs($js);
 ?>

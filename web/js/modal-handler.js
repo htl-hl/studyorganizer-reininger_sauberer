@@ -4,27 +4,25 @@ $(document).on('click', '.modal-trigger', function (e) {
     e.preventDefault();
 
     var $button = $(this);
-    // Support both 'value' attribute and 'data-url' attribute
-    var url = $button.attr('value') || $button.data('url');
+    var url = $button.attr('value') || $button.attr('data-url');
     var title = $button.attr('title') || 'Information';
 
     var modalElement = document.getElementById('modal');
-    if (!modalElement) {
-        console.error("Modal HTML structure missing from this page!");
-        return;
-    }
-
     var modal = bootstrap.Modal.getOrCreateInstance(modalElement);
 
-    // Update title and show spinner
     $('#modal .modal-title').html(title);
     $('#modalContent').html('<div class="text-center p-4"><div class="spinner-border text-primary"></div></div>');
 
     modal.show();
-    $('#modalContent').load(url);
+
+    $('#modalContent').load(url, function(response, status, xhr) {
+        if (status === "error") {
+            $('#modalContent').html('<div class="alert alert-danger">Error: ' + xhr.status + '</div>');
+        }
+    });
 });
 
-// Universal Form Submission for Modals
+// Universal Form Submission inside Modal
 $(document).on('beforeSubmit', '#homework-form', function(e) {
     var form = $(this);
     $.ajax({
