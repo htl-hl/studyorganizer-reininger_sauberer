@@ -22,6 +22,15 @@ $daysLeft = (int)$diff->format("%r%a");
             <h1 class="display-5 fw-bold text-dark m-0"><?= Html::encode($model->title) ?></h1>
 
             <div class="d-flex gap-2">
+                <?= Html::a('<i class="bi bi-check-circle me-2"></i>Erledigt', ['homework/finish-and-go-back', 'id' => $model->id], [
+                        'class' => 'btn btn-outline-success rounded-pill px-4 shadow-sm',
+                        'data' => [
+                                'method' => 'post',
+                                'confirm' => 'Möchtest du diese Aufgabe als erledigt markieren und zurück zur Übersicht?',
+                        ],
+                        'style' => $model->status === 'Finished' ? 'display:none' : ''
+                ]) ?>
+
                 <?= Html::button('<i class="bi bi-pencil-square me-2"></i>Bearbeiten', [
                         'class' => 'btn btn-outline-primary rounded-pill px-4 modal-trigger shadow-sm',
                         'data-url' => Url::to(['homework/update', 'id' => $model->id]),

@@ -75,7 +75,6 @@ $iconLogout = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fi
             border-color: #dc3545 !important;
         }
 
-
         .has-error label {
             color: #dc3545;
         }

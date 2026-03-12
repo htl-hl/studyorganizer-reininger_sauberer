@@ -48,8 +48,10 @@ class HomeworkController extends Controller
 
         $activeHomeworks = Homework::find()
             ->where(['user_id' => $currentUserId])
-            ->andWhere(['!=', 'status', 'Finished'])
-            ->orWhere(['and', ['user_id' => $currentUserId], ['status' => null]])
+            ->andWhere(['or',
+                ['!=', 'status', 'Finished'],
+                ['status' => null]
+            ])
             ->orderBy(['due_date' => SORT_ASC])
             ->all();
 
@@ -64,6 +66,7 @@ class HomeworkController extends Controller
             'finishedHomeworks' => $finishedHomeworks,
         ]);
     }
+
 
     public function actionCreate()
     {
@@ -157,5 +160,37 @@ class HomeworkController extends Controller
         }
 
         return $this->redirect(['index']);
+    }
+
+    public function actionFinishAndGoBack($id)
+    {
+        $model = $this->findModel($id);
+
+        if ($model->user_id !== Yii::$app->user->id) {
+            throw new ForbiddenHttpException('Zugriff verweigert.');
+        }
+
+        if ($model) {
+            $model->status = 'Finished';
+            $model->save(false);
+        }
+
+        return $this->redirect(['index']);
+    }
+
+    /**
+     * Findet das Homework-Modell basierend auf dem Primärschlüssel.
+     * Wenn das Modell nicht gefunden wird, wird eine 404-Fehlermeldung geworfen.
+     * * @param int $id
+     * @return \app\models\Homework das Modell
+     * @throws \yii\web\NotFoundHttpException wenn das Modell nicht existiert
+     */
+    protected function findModel($id)
+    {
+        if (($model = \app\models\Homework::findOne(['id' => $id])) !== null) {
+            return $model;
+        }
+
+        throw new \yii\web\NotFoundHttpException('Die angeforderte Seite existiert nicht.');
     }
 }
