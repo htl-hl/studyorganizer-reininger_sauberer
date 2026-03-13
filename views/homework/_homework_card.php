@@ -10,7 +10,7 @@ $daysRemaining = (int)$diff->format("%r%a");
 $badgeClass = 'bg-light text-dark border';
 if (!$isFinished) {
     if ($daysRemaining <= 1) $badgeClass = 'bg-danger text-white';
-    elseif ($daysRemaining <= 7) $badgeClass = 'bg-warning text-dark';
+    elseif ($daysRemaining < 7) $badgeClass = 'bg-warning text-dark';
     elseif ($daysRemaining < 14) $badgeClass = 'bg-primary text-white';
 } else {
     $badgeClass = 'bg-secondary text-white';

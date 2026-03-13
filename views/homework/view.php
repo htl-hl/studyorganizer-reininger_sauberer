@@ -113,13 +113,6 @@ $daysLeft = (int)$diff->format("%r%a");
     </div>
 
 <?php
-$this->registerJsFile(
-        '@web/js/modal-handler.js',
-        [
-                'depends' => [\yii\web\JqueryAsset::class],
-                'position' => \yii\web\View::POS_END,
-        ]
-);
 
 Modal::begin([
         'title' => '',

@@ -18,10 +18,22 @@ use yii\bootstrap5\ActiveForm;
     </div>
 
     <div class="mt-3">
-        <?= $form->field($model, 'subject_id')->dropDownList($subjects, [
-                'prompt' => 'Fach auswählen...',
-                'class' => 'form-select shadow-sm',
-        ])->label('Zuständiges Fach') ?>
+        <label class="form-label fw-bold text-secondary small text-uppercase" style="letter-spacing: 1px;">
+            Zuständige Fächer
+        </label>
+
+        <div class="p-3 border rounded-3 bg-light shadow-sm">
+            <?= $form->field($model, 'subject_ids')->checkboxList($subjects, [
+                    'item' => function($index, $label, $name, $checked, $value) {
+                        $isChecked = $checked ? 'checked' : '';
+                        return "
+                <div class='form-check form-check-inline me-3 mb-2'>
+                    <input type='checkbox' class='form-check-input' name='{$name}' value='{$value}' id='subject_{$value}' {$isChecked}>
+                    <label class='form-check-label' for='subject_{$value}'>{$label}</label>
+                </div>";
+                    }
+            ])->label(false) ?>
+        </div>
     </div>
 
     <div class="mt-3">

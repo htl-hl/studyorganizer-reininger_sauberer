@@ -100,13 +100,17 @@ class HomeworkController extends Controller
 
     public function actionTeachersBySubject($id)
     {
-        Yii::$app->response->format = Response::FORMAT_JSON;
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
-        $teachers = Teachers::find()
-            ->where(['subject_id' => $id, 'status' => 1])
+        $teachers = \app\models\Teachers::find()
+            ->innerJoin('Subject_Has_Teacher', 'Teachers.id = Subject_Has_Teacher.teacher_id')
+            ->where([
+                'Subject_Has_Teacher.subject_id' => $id,
+                'Teachers.status' => 1
+            ])
             ->all();
 
-        return ArrayHelper::map($teachers, 'id', function($t){
+        return \yii\helpers\ArrayHelper::map($teachers, 'id', function($t){
             return $t->firstname . ' ' . $t->lastname;
         });
     }

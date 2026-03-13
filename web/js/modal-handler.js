@@ -1,100 +1,78 @@
 // web/js/modal-handler.js
 
-$(document).on('click', '.modal-trigger', function (e) {
+// --- 1. MODAL ÖFFNEN (Funktioniert für alle Elemente mit .modal-trigger) ---
+$(document).off('click', '.modal-trigger').on('click', '.modal-trigger', function (e) {
     e.preventDefault();
-
     var $button = $(this);
     var url = $button.attr('value') || $button.attr('data-url');
     var title = $button.attr('title') || 'Information';
 
     var modalElement = document.getElementById('modal');
+    if (!modalElement) return; // Sicherheitsscheck
+
     var modal = bootstrap.Modal.getOrCreateInstance(modalElement);
 
     $('#modal .modal-title').html(title);
-    $('#modalContent').html('<div class="text-center p-4"><div class="spinner-border text-primary"></div></div>');
+    $('#modalContent').html('<div class="text-center p-5"><div class="spinner-border text-primary"></div></div>');
 
     modal.show();
 
     $('#modalContent').load(url, function(response, status, xhr) {
         if (status === "error") {
-            $('#modalContent').html('<div class="alert alert-danger">Error: ' + xhr.status + '</div>');
+            $('#modalContent').html('<div class="alert alert-danger">Fehler beim Laden: ' + xhr.status + '</div>');
         }
     });
 });
 
-// Universal Form Submission inside Modal
-$(document).on('beforeSubmit', '#homework-form', function(e) {
-    var form = $(this);
-    $.ajax({
-        url: form.attr('action'),
-        type: 'POST',
-        data: form.serialize(),
-        dataType: 'json',
-        success: function(response) {
-            if (response.success === true) {
-                bootstrap.Modal.getInstance(document.getElementById('modal')).hide();
-                location.reload();
-            } else {
-                form.yiiActiveForm('updateMessages', response, true);
-            }
-        }
-    });
-    return false;
-});
-
-// web/js/modal-handler.js
-
-// --- 1. MODAL TRIGGER LOGIC ---
-$(document).on('click', '.modal-trigger', function (e) {
+// --- 2. FORMULAR SPEICHERN (Zentral für alle Formulare im Modal) ---
+$(document).off('beforeSubmit', '#homework-form').on('beforeSubmit', '#homework-form', function(e) {
     e.preventDefault();
+    e.stopImmediatePropagation();
 
-    var $button = $(this);
-    var url = $button.attr('value') || $button.attr('data-url');
-    var title = $button.attr('title') || 'Information';
+    var $form = $(this);
 
-    var modalElement = document.getElementById('modal');
-    var modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+    // Schutz gegen Mehrfach-Senden
+    if ($form.data('is-submitting')) return false;
+    $form.data('is-submitting', true);
 
-    $('#modal .modal-title').html(title);
-    $('#modalContent').html('<div class="text-center p-4"><div class="spinner-border text-primary"></div></div>');
+    var $btn = $('#save-button');
+    $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Speichert...');
 
-    modal.show();
-
-    $('#modalContent').load(url, function(response, status, xhr) {
-        if (status === "error") {
-            $('#modalContent').html('<div class="alert alert-danger">Error: ' + xhr.status + '</div>');
-        }
-    });
-});
-
-// --- 2. FORM SUBMISSION INSIDE MODAL ---
-$(document).on('beforeSubmit', '#homework-form', function(e) {
-    var form = $(this);
     $.ajax({
-        url: form.attr('action'),
+        url: $form.attr('action'),
         type: 'POST',
-        data: form.serialize(),
+        data: $form.serialize(),
         dataType: 'json',
         success: function(response) {
             if (response.success === true) {
-                bootstrap.Modal.getInstance(document.getElementById('modal')).hide();
-                location.reload();
+                var modalInstance = bootstrap.Modal.getInstance(document.getElementById('modal'));
+                if (modalInstance) modalInstance.hide();
+
+                // Wir nutzen location.reload(), um die Seite nach dem Speichern frisch zu laden
+                window.location.reload();
             } else {
-                form.yiiActiveForm('updateMessages', response, true);
+                $form.data('is-submitting', false);
+                $btn.prop('disabled', false).text('Aufgabe speichern');
+                $form.yiiActiveForm('updateMessages', response, true);
             }
+        },
+        error: function() {
+            $form.data('is-submitting', false);
+            $btn.prop('disabled', false).text('Aufgabe speichern');
+            alert('Ein Serverfehler ist aufgetreten.');
         }
     });
+
     return false;
 });
 
-// --- 3. CHECKBOX LOGIC (The Missing Piece) ---
-$(document).on('change', '.finish-checkbox', function() {
+// --- 3. STATUS-CHECKBOX (Sofort-Update) ---
+$(document).off('change', '.finish-checkbox').on('change', '.finish-checkbox', function() {
     var checkbox = $(this);
     var id = checkbox.data('id');
-    var toggleUrl = checkbox.data('toggle-url'); // We get the URL from the checkbox data attribute
+    var toggleUrl = checkbox.data('toggle-url');
 
     var data = { id: id };
-    // Yii2 needs the CSRF token for POST requests
     data[yii.getCsrfParam()] = yii.getCsrfToken();
 
     $.ajax({
@@ -104,15 +82,11 @@ $(document).on('change', '.finish-checkbox', function() {
         dataType: 'json',
         success: function(res) {
             if (res.success) {
-                location.reload();
+                window.location.reload();
             } else {
                 alert('Fehler: ' + (res.error || 'Unbekannter Fehler'));
-                checkbox.prop('checked', !checkbox.prop('checked')); // Revert if failed
+                checkbox.prop('checked', !checkbox.prop('checked'));
             }
-        },
-        error: function(xhr) {
-            alert('Server-Fehler: ' + xhr.status);
-            checkbox.prop('checked', !checkbox.prop('checked'));
         }
     });
 });

@@ -1,39 +1,35 @@
 USE STUDYORGANIZER;
 
--- 1. Fächer anlegen
-INSERT INTO Subjects (name, status)
-VALUES ('Mathematik', 1),
-       ('Deutsch', 1),
-       ('Englisch', 1),
-       ('Informatik', 1),
-       ('Physik', 1),
-       ('Wirtschaft', 1);
+-- 1. Fächer (Subjects)
+INSERT INTO Subjects (name, status) VALUES
+                                        ('Mathematik', 1),
+                                        ('Deutsch', 1),
+                                        ('Englisch', 1),
+                                        ('Informatik', 1),
+                                        ('Physik', 1),
+                                        ('Geschichte', 0);
 
--- 2. Lehrer anlegen
-INSERT INTO Teachers (firstname, lastname, status)
-VALUES ('Max', 'Mustermann', 1),   -- ID 1
-       ('Erika', 'Schmidt', 1),    -- ID 2
-       ('Klaus', 'Weber', 1),      -- ID 3
-       ('Sabine', 'Meyer', 1),     -- ID 4
-       ('Christian', 'Wagner', 1), -- ID 5
-       ('Johanna', 'Lehmann', 1);
--- ID 6
+-- 2. Lehrer (Teachers)
+INSERT INTO Teachers (firstname, lastname, subject_id, status) VALUES
+                                                                   ('Max', 'Mustermann', NULL, 1),
+                                                                   ('Erika', 'Schmidt', NULL, 1),
+                                                                   ('Christian', 'Weber', NULL, 1),
+                                                                   ('Susanne', 'Wagner', NULL, 1);
 
--- 3. Verknüpfung: Welcher Lehrer unterrichtet welches Fach?
-INSERT INTO Subject_Has_Teacher (subject_id, teacher_id)
-VALUES (1, 1), -- Max unterrichtet Mathe
-       (1, 2), -- Erika unterrichtet auch Mathe
-       (2, 3), -- Klaus unterrichtet Deutsch
-       (3, 4), -- Sabine unterrichtet Englisch
-       (4, 5), -- Christian unterrichtet Informatik
-       (5, 1), -- Max unterrichtet auch Physik
-       (6, 6);
--- Johanna unterrichtet Wirtschaft
+-- 3. Verknüpfung Lehrer <-> Fächer (Subject_Has_Teacher)
+INSERT INTO Subject_Has_Teacher (teacher_id, subject_id) VALUES
+                                                             (1, 1), (1, 5), -- Mustermann: Mathe, Physik
+                                                             (2, 2), (2, 3), -- Schmidt: Deutsch, Englisch
+                                                             (3, 4),         -- Weber: Informatik
+                                                             (4, 1), (4, 4); -- Wagner: Mathe, Informatik
 
--- 4. (Optional) Ein paar Beispiel-Hausaufgaben für die Übersicht
--- Wichtig: Hier muss die user_id 1 existieren!
-INSERT INTO Homework (title, description, due_date, status, user_id, subject_id, teacher_id)
-VALUES ('Mathe Übung 1', 'S. 45 Nr. 1-5 im Buch', DATE_ADD(CURDATE(), INTERVAL 2 DAY), 'Offen', 1, 1, 1),
-       ('Deutsch Essay', 'Analyse der Kurzgeschichte', DATE_ADD(CURDATE(), INTERVAL 8 DAY), 'Offen', 1, 2, 3),
-       ('Informatik Projekt', 'PHP Controller fertigstellen', DATE_ADD(CURDATE(), INTERVAL 15 DAY), 'In Arbeit', 1, 4,
-        5);
+-- 4. Test-User
+INSERT INTO Users (firstname, lastname, username, password, role, authKey)
+VALUES ('Max', 'Schüler', 'user1', '$2y$12$.tvio0XGMEiZtVV8IEEC0.VSIaaubjuvpvvXbNyJU0BHc4t1REOzS', 'user', 'user_auth_key');
+
+-- 5. Hausaufgaben (Homework)
+INSERT INTO Homework (title, description, due_date, status, user_id, subject_id, teacher_id) VALUES
+                                                                                                 ('Mathe S. 44', 'Aufgaben 1 bis 5 im Buch.', '2026-03-20', 'Open', 2, 1, 1),
+                                                                                                 ('Vokabeln Unit 3', 'Alle Vokabeln der Unit 3 lernen.', '2026-03-15', 'Open', 2, 3, 2),
+                                                                                                 ('Physik Experiment', 'Protokoll zum Versuch.', '2026-03-05', 'Finished', 2, 5, 1),
+                                                                                                 ('Aufsatz Analyse', 'Interpretation von Faust.', '2026-02-28', 'Finished', 2, 2, 2);
