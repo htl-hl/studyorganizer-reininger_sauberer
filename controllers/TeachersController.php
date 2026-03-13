@@ -51,6 +51,8 @@ class TeachersController extends Controller
         $model = $this->findModel($id);
         $subjects = ArrayHelper::map(Subjects::find()->where(['status' => 1])->all(), 'id', 'name');
 
+        $model->subject_ids = ArrayHelper::getColumn($model->getSubjects()->asArray()->all(), 'id');
+
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['index']);
         }
@@ -67,5 +69,11 @@ class TeachersController extends Controller
             return $model;
         }
         throw new NotFoundHttpException('Lehrer nicht gefunden.');
+    }
+
+    public function getSubjects()
+    {
+        return $this->hasMany(Subjects::class, ['id' => 'subject_id'])
+            ->viaTable('Subject_Has_Teacher', ['teacher_id' => 'id']);
     }
 }

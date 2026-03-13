@@ -3,45 +3,28 @@
 namespace app\models;
 
 use Yii;
+use yii\helpers\ArrayHelper;
 
-/**
- * This is the model class for table "Teachers".
- *
- * @property int $id
- * @property string $firstname
- * @property string $lastname
- * @property int $status
- *
- * @property SubjectHasTeacher[] $subjectHasTeachers
- * @property Subjects[] $subjects
- */
 class Teachers extends \yii\db\ActiveRecord
 {
+    // Virtuelles Attribut für die Mehrfachauswahl im Formular
+    public $subject_ids = [];
 
-
-    /**
-     * {@inheritdoc}
-     */
     public static function tableName()
     {
         return 'Teachers';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function rules()
     {
         return [
             [['firstname', 'lastname', 'status'], 'required'],
-            [['status', 'subject_id'], 'integer'],
+            [['status'], 'integer'],
             [['firstname', 'lastname'], 'string', 'max' => 50],
+            [['subject_ids'], 'safe'],
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function attributeLabels()
     {
         return [
@@ -49,27 +32,40 @@ class Teachers extends \yii\db\ActiveRecord
             'firstname' => 'Vorname',
             'lastname' => 'Nachname',
             'status' => 'Status',
+            'subject_ids' => 'Fächer',
         ];
     }
 
     /**
-     * Gets query for [[SubjectHasTeachers]].
-     *
-     * @return \yii\db\ActiveQuery
+     * Holt alle verknüpften Fächer über die Zwischentabelle
      */
-    public function getSubjectHasTeachers()
+    public function getSubjects()
     {
-        return $this->hasMany(SubjectHasTeacher::class, ['teacher_id' => 'id']);
+        return $this->hasMany(Subjects::class, ['id' => 'subject_id'])
+            ->viaTable('Subject_Has_Teacher', ['teacher_id' => 'id']);
     }
 
     /**
-     * Gets query for [[Subjects]].
-     *
-     * @return \yii\db\ActiveQuery
+     * Speichert die Fächer-Verknüpfungen nach dem Speichern des Lehrers
      */
-    public function getSubject()
+    public function afterSave($insert, $changedAttributes)
     {
-        return $this->hasOne(Subjects::class, ['id' => 'subject_id']);
-    }
+        parent::afterSave($insert, $changedAttributes);
 
+        // Zuerst alle alten Verknüpfungen löschen
+        Yii::$app->db->createCommand()
+            ->delete('Subject_Has_Teacher', ['teacher_id' => $this->id])
+            ->execute();
+
+        // Neue Verknüpfungen einfügen, wenn welche ausgewählt wurden
+        if (!empty($this->subject_ids) && is_array($this->subject_ids)) {
+            $rows = [];
+            foreach ($this->subject_ids as $s_id) {
+                $rows[] = [$s_id, $this->id];
+            }
+            Yii::$app->db->createCommand()
+                ->batchInsert('Subject_Has_Teacher', ['subject_id', 'teacher_id'], $rows)
+                ->execute();
+        }
+    }
 }

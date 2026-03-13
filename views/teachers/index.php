@@ -35,10 +35,22 @@ $this->title = 'Lehrerverwaltung';
                                         },
                                 ],
                                 [
-                                        'attribute' => 'subject_id',
-                                        'label' => 'Fach',
+                                        'label' => 'Fächer',
+                                        'format' => 'raw',
                                         'value' => function($model) {
-                                            return $model->subject ? $model->subject->name : 'Kein Fach';
+                                            $subjects = \yii\helpers\ArrayHelper::getColumn($model->subjects, 'name');
+
+                                            if (empty($subjects)) {
+                                                return '<span class="text-muted small italic">Kein Fach</span>';
+                                            }
+
+                                            $html = '';
+                                            foreach ($subjects as $name) {
+                                                $html .= Html::tag('span', Html::encode($name), [
+                                                        'class' => 'badge bg-primary-subtle text-primary border border-primary-subtle me-1 rounded-pill fw-normal'
+                                                ]);
+                                            }
+                                            return $html;
                                         }
                                 ],
                                 [
