@@ -6,7 +6,6 @@ $dueDateTime = new DateTime($task->due_date);
 $diff = $today->diff($dueDateTime);
 $daysRemaining = (int)$diff->format("%r%a");
 
-// Styling logic based on status and time
 $badgeClass = 'bg-light text-dark border';
 if (!$isFinished) {
     if ($daysRemaining <= 1) $badgeClass = 'bg-danger text-white';
@@ -18,10 +17,9 @@ if (!$isFinished) {
 ?>
 
 <div class="col">
-    <div class="card h-100 shadow-sm hover-shadow <?= $isFinished ? 'is-finished' : '' ?>"
+    <div class="card h-100 shadow-sm hover-shadow homework-card-clickable <?= $isFinished ? 'is-finished' : '' ?>"
          style="cursor: pointer;"
-         onclick="window.location='<?= Url::to(['view', 'id' => $task->id]) ?>'">
-
+         data-url="<?= \yii\helpers\Url::to(['view', 'id' => $task->id]) ?>">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-start mb-2">
                 <h5 class="card-title text-primary mb-0 <?= $isFinished ? 'text-decoration-line-through text-muted' : '' ?>">

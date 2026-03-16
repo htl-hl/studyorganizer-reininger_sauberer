@@ -24,7 +24,7 @@ class AppAsset extends AssetBundle
         'css/site.css',
     ];
     public $js = [
-        'js/modal-handler.js',
+        'js/homework-action.js',
     ];
     public $depends = [
         'yii\web\YiiAsset',

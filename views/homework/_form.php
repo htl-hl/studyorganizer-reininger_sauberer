@@ -41,6 +41,7 @@ $form = ActiveForm::begin([
                             'id' => 'subject-id',
                             'class' => 'form-select',
                             'data-url' => \yii\helpers\Url::to(['homework/teachers-by-subject']),
+                            'data-current-teacher' => $model->teacher_id ?? ''
                     ]
             ) ?>
         </div>
@@ -64,7 +65,6 @@ $form = ActiveForm::begin([
                             'prompt' => $model->subject_id ? 'Lehrer auswählen' : 'Zuerst Fach wählen',
                             'id' => 'teacher-id',
                             'class' => 'form-select',
-                            'data-selected' => $model->teacher_id ?? ''
                     ]
             ) ?>
         </div>
@@ -78,9 +78,3 @@ $form = ActiveForm::begin([
     </div>
 
 <?php ActiveForm::end(); ?>
-
-<?php
-$this->registerJsFile('@web/js/homework-form.js', [
-        'depends' => [\yii\web\JqueryAsset::class]
-]);
-?>

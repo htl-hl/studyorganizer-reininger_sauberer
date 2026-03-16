@@ -33,7 +33,7 @@ class Homework extends \yii\db\ActiveRecord
             [['description', 'due_date', 'status'], 'default', 'value' => null],
             [['title', 'user_id', 'subject_id', 'teacher_id'], 'required'],
             [['description'], 'string'],
-            [['due_date'], 'safe'],
+            [['due_date'], 'date', 'format' => 'php:Y-m-d'],
             [['user_id', 'subject_id', 'teacher_id'], 'integer'],
             [['title'], 'string', 'max' => 100],
             [['status'], 'string', 'max' => 20],
