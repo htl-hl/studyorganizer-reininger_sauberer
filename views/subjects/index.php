@@ -77,22 +77,7 @@ Modal::end();
 ?>
 
 <?php
-$js = <<<JS
-    window.showSubjectModal = function(url, title) {
-        console.log("Lade URL: " + url); // Debugging: Schau in die Browser-Konsole (F12)
-        $('#modalTitle').text(title);
-        $('#modalContent').html('<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>');
-        $('#subjectModal').modal('show');
-        
-        $.get(url)
-            .done(function(data) {
-                $('#modalContent').html(data);
-            })
-            .fail(function(xhr) {
-                console.error(xhr);
-                $('#modalContent').html('<div class="p-4"><div class="alert alert-danger">Fehler: ' + xhr.status + ' - ' + xhr.statusText + '<br><small>Pfad: ' + url + '</small></div></div>');
-            });
-    }
-JS;
-$this->registerJs($js);
+$this->registerJsFile('@web/js/subject-modal.js', [
+        'depends' => [\yii\web\JqueryAsset::class]
+]);
 ?>
