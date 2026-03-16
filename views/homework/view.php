@@ -107,7 +107,7 @@ $daysLeft = (int)$diff->format("%r%a");
             </div>
 
             <div class="col-12 text-center mt-3">
-                <?= Html::a('← Zurück zur Übersicht', ['index'], ['class' => 'btn btn-link text-muted text-decoration-none small']) ?>
+                <?= Html::a('Zurück zur Übersicht', ['index'], ['class' => 'btn btn-link text-muted text-decoration-none small']) ?>
             </div>
         </div>
     </div>
