@@ -40,7 +40,7 @@ $daysLeft = (int)$diff->format("%r%a");
                 <?= Html::a('<i class="bi bi-trash3 me-2"></i>Löschen', ['delete', 'id' => $model->id], [
                         'class' => 'btn btn-outline-danger rounded-pill px-4 shadow-sm',
                         'data' => [
-                                'confirm' => 'Möchtest du diese Hausaufgabe wirklich löschen?',
+                                'confirm' => 'Möchtest du diese Aufgabe wirklich löschen?',
                                 'method' => 'post',
                         ],
                 ]) ?>

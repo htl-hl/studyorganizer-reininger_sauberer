@@ -20,6 +20,7 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             [['username', 'password'], 'required', 'on' => 'register'],
             [['username'], 'required', 'on' => 'login'],
+            ['username', 'unique', 'message' => 'Dieser Benutzername ist bereits vergeben.'],
             [['firstname'], 'required', 'on' => 'register'],
             [['lastname'], 'required', 'on' => 'register'],
             ['rememberMe', 'boolean'],

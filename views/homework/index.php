@@ -83,8 +83,6 @@ foreach ($activeHomeworks as $hw) {
 </div>
 
 <?php
-
-
 Modal::begin([
         'title' => '',
         'id' => 'modal',

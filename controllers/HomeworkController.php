@@ -71,6 +71,7 @@ class HomeworkController extends Controller
     public function actionCreate()
     {
         $model = new Homework();
+        $model->due_date = date('Y-m-d');
 
         if ($model->load(Yii::$app->request->post())) {
             $model->user_id = Yii::$app->user->id;
